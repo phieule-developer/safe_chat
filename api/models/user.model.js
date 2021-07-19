@@ -7,6 +7,7 @@ let Schema = new mongoose.Schema({
         default: ""
     },
     fullname: {
+        require:true,
         type: String,
         default: ""
     },
@@ -19,7 +20,8 @@ let Schema = new mongoose.Schema({
         default: 0,
         enum:[0,1]
     },
-    email: { 
+    email: {
+        require:true,
         type: String, 
         default: "" 
     },
@@ -29,21 +31,25 @@ let Schema = new mongoose.Schema({
     },
     created_at: { 
         type: Number, 
-        required: true,
         default: Date.now()
     },
     expired_at: { 
         type: Number, 
-        required: true,
         default: 0 
     },
     last_online: { 
         type: Number, 
-        required: true,
         default: Date.now()
     },
-    password: { type: String,required: true,default: "" },
-    status: { type: Number,default: 0 },
+    password: { 
+        type: String,
+        required: true,
+        default: "" 
+    },
+    status: { 
+        type: Number,
+        default: 0 
+    },
     
 });
 

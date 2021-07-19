@@ -33,7 +33,7 @@ module.exports = {
     },
     register:async (req, res) => {
         try {
-            let { email, password, confirm_password, fullname, sex, dob } = req.body;
+            let { email, password, confirm_password, fullname } = req.body;
 
             let error,result;
             
