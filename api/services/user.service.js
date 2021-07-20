@@ -2,13 +2,11 @@ let userModel = require('../models/user.model');
 
 module.exports = {
     getOneById: async (id) => {
-        //console.log(id);
         let user = await userModel.findById(id);
         if (user) {
             user.token_verify = "";
             user.password = "";
         }
-
         return user;
     },
     updateMe: async (id, body) => {

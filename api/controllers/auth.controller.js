@@ -1,13 +1,14 @@
 const to = require('await-to-js').default;
 const jwt = require('jsonwebtoken');
 const authService = require('../services/auth.service');
+const userService = require('../services/user.service');
 const { CONST } = require('../../constants/const');
 const bcrypt = require('bcrypt');
 
-const {ApiResponse} = require('../../helper/response/Api_Response');
+const { ApiResponse } = require('../../helper/response/Api_Response');
 const version = 1;
 module.exports = {
-    login:async (req, res) => {
+    login: async (req, res) => {
         try {
             let { email, password } = req.body;
             let error, result;
@@ -31,12 +32,12 @@ module.exports = {
         }
 
     },
-    register:async (req, res) => {
+    register: async (req, res) => {
         try {
             let { email, password, confirm_password, fullname } = req.body;
 
-            let error,result;
-            
+            let error, result;
+
             [error, result] = await to(authService.check_password(password, confirm_password));
 
             if (error) {
@@ -49,7 +50,7 @@ module.exports = {
                 }
                 else {
 
-                    req.body.password =await bcrypt.hash(password,10);
+                    req.body.password = await bcrypt.hash(password, 10);
 
                     let ans = await authService.register(req.body);
 
@@ -58,7 +59,6 @@ module.exports = {
                 }
             }
         } catch (error) {
-            console.log(error);
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
         }
 
@@ -67,5 +67,25 @@ module.exports = {
     },
     change_password: (req, res) => {
 
+    },
+    check_session: async (req, res) => {
+        try {
+            const authHeaders = req.headers["x_access_token"];
+            if (authHeaders) {
+                const token = authHeaders;
+                const decoded = await jwt.verify(token, CONST.JWT_SCRET);
+                const user = await userService.getOneById(decoded.userId);
+                if (!user) {
+                    return ApiResponse(res, 401, "Không thể xác thực", false, version);
+                } else {
+                    return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, true, version)
+                }
+            } else {
+                return ApiResponse(res, 401, "Không thể xác thực", false, version)
+            }
+        } catch (error) {
+            console.log(error);
+            return ApiResponse(res, 500, "Không thể xác thực", false, version)
+        }
     }
 }
