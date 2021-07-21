@@ -12,5 +12,9 @@ module.exports = {
     updateMe: async (id, body) => {
         let user = await userModel.findByIdAndUpdate(id, body);
         return user;
-    }
+    },
+    getAll:async (filter) => {
+        let user = await userModel.aggregate(filter);
+        return user;
+    },
 }
