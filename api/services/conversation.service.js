@@ -2,36 +2,20 @@ const { Types } = require('mongoose');
 let conservationModel = require('../models/conversation.model');
 module.exports ={
     create:async (body)=>{
-        let ans = await conservationModel.create(body);
-        return ans;
+        let result = await conservationModel.create(body);
+        return result;
     },
-    getAll:async (userId)=>{
-        let ans = await conservationModel.aggregate(
-            [
-                {
-                    $match:{
-                        status:{$ne:-1},
-                        members:{
-                            $in:[Types.ObjectId(userId)]
-                        }
-                    }
-                },
-                {
-                    $sort:{
-                        last_update:-1
-                    }
-                }
-            ]
-        );
-        return ans;
+    getAll:async (filter)=>{
+        let result = await conservationModel.aggregate(filter);
+        return result;
     },
     getOneById:async (id) =>{
-        let ans = await conservationModel.findById(id);
-        return ans;
+        let result = await conservationModel.findById(id);
+        return result;
     },
     update:async (id,body) =>{
-        let ans = await conservationModel.findByIdAndUpdate(id,body);
-        return ans;
+        let result = await conservationModel.findByIdAndUpdate(id,body);
+        return result;
     },
     checkExistsConservation:async (sender_id,receiver_id)=>{
         return new Promise(async (resolve,reject)=>{

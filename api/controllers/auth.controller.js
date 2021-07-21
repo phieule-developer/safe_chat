@@ -78,13 +78,16 @@ module.exports = {
                 if (!user) {
                     return ApiResponse(res, 401, "Không thể xác thực", false, version);
                 } else {
-                    return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, true, version)
+                    if(user.exp >= Date.now()){
+                        return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, true, version)
+                    }else{
+                        return ApiResponse(res, 400, "Token đã hết hạn", false, version);
+                    }
                 }
             } else {
                 return ApiResponse(res, 401, "Không thể xác thực", false, version)
             }
         } catch (error) {
-            console.log(error);
             return ApiResponse(res, 500, "Không thể xác thực", false, version)
         }
     }

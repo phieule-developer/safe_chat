@@ -20,8 +20,13 @@ module.exports = {
 
                     let check = await userServices.getOneById(user.userId);
                     if (check) {
-                        req.userId = user.userId;
-                        return next();
+                        if(user.exp >= Date.now()){
+                            req.userId = user.userId;
+                            return next();
+                        }else{
+                            return ApiResponse(res, 401, "Token đã hết hạn", {}, version);
+                        }
+                        
                     } else {
                         return ApiResponse(res, 401, "Xác thực thất bại", {}, version);
                     }

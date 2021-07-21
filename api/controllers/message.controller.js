@@ -57,9 +57,9 @@ module.exports = {
             let receiver_id = req.params.id;
 
             let error,conversation_id;
-
+            console.log(receiver_id);
             [error,conversation_id] = await to(conversationService.checkExistsConservation(req.userId,receiver_id));
-
+            console.log(error,conversation_id);
             if(error) {
                 return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS,[],version);
             }
@@ -69,7 +69,6 @@ module.exports = {
                 return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS,ans,version);
             }
         } catch (error) {
-            console.log(error);
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR,{},version);
         }
     }
