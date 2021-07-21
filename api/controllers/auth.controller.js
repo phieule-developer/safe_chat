@@ -19,7 +19,7 @@ module.exports = {
             }
             else {
                 let payload = {
-                    exp: Date.now() + 30 * 600 * 1000,
+                    exp: Date.now() + 30 * 60 * 1000,
                     userId: result._id
                 };
 
@@ -78,9 +78,9 @@ module.exports = {
                 if (!user) {
                     return ApiResponse(res, 401, "Không thể xác thực", false, version);
                 } else {
-                    if(user.exp >= Date.now()){
+                    if (decoded.exp >= Date.now()) {
                         return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, true, version)
-                    }else{
+                    } else {
                         return ApiResponse(res, 400, "Token đã hết hạn", false, version);
                     }
                 }
