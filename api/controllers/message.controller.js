@@ -35,10 +35,11 @@ module.exports = {
                         conversation_id: result,
                         sender_id: req.userId,
                         type: 0,
+                        created_at:Date.now(),
                         content,
                     };
                     await Promise.all([
-                        conversationService.update(result,{last_update:Date.now()}),
+                        conversationService.update(result,{last_update:_message.created_at}),
                         messsageService.create(_message)
                     ]);
                     sendReportToUser(receiver_id,CONST.EVENT.PERSON_MESSAGE,{content})
@@ -57,7 +58,7 @@ module.exports = {
             let receiver_id = req.params.id;
 
             let error,conversation_id;
-            console.log(receiver_id);
+
             [error,conversation_id] = await to(conversationService.checkExistsConservation(req.userId,receiver_id));
             console.log(error,conversation_id);
             if(error) {
