@@ -48,6 +48,16 @@ module.exports = {
                     }
                 },
                 {
+                    $lookup: {
+                        from: DATABASE_NAME.MESSAGE,
+                        localField: '_id',
+                        foreignField: 'conversation_id',
+                        as: 'message',
+                    }
+                },
+                { 
+                    $addFields: { lastMessage: { $last: "$message" } } },
+                {
                     $sort:{
                         last_update:-1
                     }
@@ -55,6 +65,7 @@ module.exports = {
                 {
                     $project:{
                         "members":0,
+                        "message":0
                     }
                 
                 },
