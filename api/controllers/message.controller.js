@@ -60,7 +60,6 @@ module.exports = {
             let error,conversation_id;
 
             [error,conversation_id] = await to(conversationService.checkExistsConservation(req.userId,receiver_id));
-            console.log(error,conversation_id);
             if(error) {
                 return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS,[],version);
             }
