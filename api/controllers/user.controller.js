@@ -21,13 +21,13 @@ module.exports = {
                 body_update.avatar = req.body.avatar;
             };
             if (req.body.dob) {
-                body_update.avatar = req.body.avatar;
+                body_update.dob = req.body.dob;
             };
             if (req.body.sex) {
-                body_update.avatar = req.body.avatar;
+                body_update.sex = req.body.sex;
             };
             if (req.body.fullname) {
-                body_update.avatar = req.body.avatar;
+                body_update.sex = req.body.sex;
             };
 
             await userService.updateMe(req.userId, body_update);
@@ -50,7 +50,7 @@ module.exports = {
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
         }
     },
-    getAll:async (req,res)=>{
+    getAll: async (req, res) => {
         try {
             let text = req.query.text;
 
@@ -70,8 +70,8 @@ module.exports = {
                     }
                 },
                 {
-                    $match:{
-                        $or:[
+                    $match: {
+                        $or: [
                             {
                                 name_lower: {
                                     $regex: text ? text.toLowerCase() : ""
@@ -81,21 +81,21 @@ module.exports = {
                                 email_lower: {
                                     $regex: text ? text.toLowerCase() : ""
                                 }
-                            },  
+                            },
                         ]
                     }
                 },
                 {
-                    $project:{
-                        "password":0,
-                        "token_verify":0,
-                        "name_lower":0,
-                        "email_lower":0
+                    $project: {
+                        "password": 0,
+                        "token_verify": 0,
+                        "name_lower": 0,
+                        "email_lower": 0
                     }
                 }
             ];
-        let result = await userService.getAll(filter);
-        return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS,result, version);
+            let result = await userService.getAll(filter);
+            return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, result, version);
 
         } catch (error) {
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
