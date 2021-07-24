@@ -22,10 +22,10 @@ module.exports = {
                     let conversation = await conversationService.create(req.body);
                     let _message = {
                         conversation_id: conversation._id,
+                        created_at:conversation.last_update,
                         sender_id: req.userId,
                         type: 0,
                         content,
-
                     };
                     let ans = await messsageService.create(_message);
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS,ans, version);

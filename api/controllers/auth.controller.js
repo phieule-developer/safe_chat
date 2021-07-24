@@ -19,7 +19,7 @@ module.exports = {
             }
             else {
                 let payload = {
-                    exp: Date.now() + 30 * 60 * 1000,
+                    exp: Date.now() + 30000 * 60 * 1000,
                     userId: result._id
                 };
 
