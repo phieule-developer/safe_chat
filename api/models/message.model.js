@@ -12,19 +12,23 @@ let Schema = new mongoose.Schema({
         ref: DATABASE_NAME.USER,
         required: true,
     },
-    content:{
-        type: String, 
+    content: {
+        type: String,
         required: true,
-        default:""
+        default: ""
     },
-    type: { type: Number,default: 0 },
-    created_at: { 
-        type: Number, 
+    type: {
+        type: Number,
+        default: 0,
+        required: true
+    },
+    created_at: {
+        type: Number,
         required: true,
         default: Date.now()
     },
-    status: { type: Number,default: 0 },
-    
+    status: { type: Number, default: 0 },
+
 });
 
 mongoose.model(DATABASE_NAME.MESSAGE, Schema)
