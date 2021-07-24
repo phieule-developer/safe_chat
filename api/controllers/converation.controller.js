@@ -10,7 +10,9 @@ module.exports = {
         try {
 
             let { list_user } = req.body;
-
+            
+            list_user.push(req.userId);
+            
             req.body.members = list_user;
 
             let ans = await conservationService.create(req.body);

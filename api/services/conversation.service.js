@@ -1,4 +1,5 @@
 const { Types } = require('mongoose');
+const conversationModel = require('../models/conversation.model');
 let conservationModel = require('../models/conversation.model');
 module.exports ={
     create:async (body)=>{
@@ -19,13 +20,31 @@ module.exports ={
     },
     checkExistsConservation:async (sender_id,receiver_id)=>{
         return new Promise(async (resolve,reject)=>{
-            let check = await conservationModel.findOne({
-                members:{
-                    $all:[Types.ObjectId(sender_id),Types.ObjectId(receiver_id)]}
-            });
-
-            if(check){
-                resolve(check._id);
+            let mem = [
+                Types.ObjectId(sender_id),
+                Types.ObjectId(receiver_id)
+            ];
+            let mem_reverse =[
+                Types.ObjectId(receiver_id),
+                Types.ObjectId(sender_id)
+            ]
+            let check = await conversationModel.aggregate([
+                {
+                    $match: {
+                        $or:[
+                            {
+                                members:mem
+                            },
+                            {
+                                members:mem_reverse
+                            }
+                        ]
+                        
+                    }
+                }
+            ]);
+            if(check.length > 0){
+                resolve(check[0]._id);
             }else{
                 reject(true);
             }

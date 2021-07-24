@@ -54,12 +54,12 @@ module.exports = {
         try {
             let page_index = Number(req.query.page_index) ? Number(req.query.page_index) : 1;
             let page_size = Number(req.query.page_size) ? Number(req.query.page_size) : 10;
-
             let receiver_id = req.params.id;
 
             let error,conversation_id;
 
             [error,conversation_id] = await to(conversationService.checkExistsConservation(req.userId,receiver_id));
+
             if(error) {
                 return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS,[],version);
             }

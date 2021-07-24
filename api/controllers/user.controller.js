@@ -1,3 +1,4 @@
+const { Types } = require('mongoose');
 const { CONST } = require('../../constants/const');
 const { ApiResponse } = require('../../helper/response/Api_Response');
 const userService = require('../services/user.service');
@@ -71,6 +72,7 @@ module.exports = {
                 },
                 {
                     $match: {
+                        _id:{$ne:Types.ObjectId(req.userId)},
                         $or: [
                             {
                                 name_lower: {
