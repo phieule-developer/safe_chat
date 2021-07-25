@@ -42,7 +42,7 @@ module.exports = {
                         conversationService.update(result,{last_update:_message.created_at}),
                         messsageService.create(_message)
                     ]);
-                    sendReportToUser(receiver_id,CONST.EVENT.PERSON_MESSAGE,{content})
+                    sendReportToUser(receiver_id,CONST.EVENT.PERSON_MESSAGE,{message:_message})
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS,{}, version);
                 }
             }
