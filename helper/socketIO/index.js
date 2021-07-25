@@ -39,6 +39,7 @@ const sendReportToUser = (user_id, event_name, data) => {
             }
         }
     } catch (error) {
+        console.log(error);
     }
 }
 module.exports = {
