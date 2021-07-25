@@ -10,8 +10,16 @@ mongoose.connect('mongodb://localhost:27017/safe_chat',{useNewUrlParser:true,use
 require('dotenv').config();
 
 app.use(require('./api/routers/router'));
-const io = require('socket.io')(server);
+global.io = require('socket.io')(server);
+const PORT = process.env.PORT || 3000;
 
+server.listen(PORT, () => {
+  console.log(`Server is listening on *:${PORT}`);
+});
+
+global.client = {};
+const {socket,sendReportToUser} = require('./helper/socketIO');
+socket(io);
 
 // const crypto = require('crypto');
 // const alice = crypto.getDiffieHellman('modp15');
@@ -26,11 +34,4 @@ const io = require('socket.io')(server);
 
 // console.log(aliceSecret);
 // console.log(bobSecret);
-const PORT = process.env.PORT || 3000;
 
-server.listen(PORT, () => {
-  console.log(`Server is listening on *:${PORT}`);
-});
-
-const {socket} = require('./helper/socketIO');
-socket(io);

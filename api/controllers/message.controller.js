@@ -15,7 +15,7 @@ module.exports = {
             if (type == CONST.TYPE.GROUP) {
                 // Tin nhắn nhóm
             } else {
-                [error, result] = await to(conversationService.checkExistsConservation(req.userId, receiver_id));
+                [error, result] = await to(conversationService.checkExistsConservationMember(req.userId, receiver_id));
 
                 if (error) {
                     req.body.members = [req.userId, receiver_id];
@@ -42,7 +42,7 @@ module.exports = {
                         conversationService.update(result,{last_update:_message.created_at}),
                         messsageService.create(_message)
                     ]);
-                    //sendReportToUser(receiver_id,CONST.EVENT.PERSON_MESSAGE,{content})
+                    sendReportToUser(receiver_id,CONST.EVENT.PERSON_MESSAGE,{content})
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS,{}, version);
                 }
             }
@@ -59,14 +59,21 @@ module.exports = {
 
             let error,conversation_id;
 
-            [error,conversation_id] = await to(conversationService.checkExistsConservation(req.userId,receiver_id));
+            [error,conversation_id] = await to(conversationService.checkExistsConservationMember(req.userId,receiver_id));
 
             if(error) {
-                return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS,[],version);
+
+                 [error,conversation_id] = await to(conversationService.checkExistsConservationID(receiver_id));
+
+                if(error){
+                    return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS,[],version);
+                }else{
+                    let ans = await messsageService.getAllConversation(conversation_id,page_index,page_size);
+                    return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS,ans,version);
+                }
             }
             else{
                 let ans = await messsageService.getAllConversation(conversation_id,page_index,page_size);
-
                 return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS,ans,version);
             }
         } catch (error) {
