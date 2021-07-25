@@ -18,7 +18,7 @@ server.listen(PORT, () => {
 });
 
 global.client = {};
-const {socket,sendReportToUser} = require('./helper/socketIO');
+const {socket} = require('./helper/socketIO');
 socket(io);
 
 // const crypto = require('crypto');
