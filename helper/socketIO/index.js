@@ -17,7 +17,7 @@ const socket = (io) => {
                     }
                 }
             }
-            socket.on('disconnect',async () => {
+            socket.on('disconnect', async () => {
                 if (token) {
                     const decoded = await jwt.verify(token, CONST.JWT_SCRET);
                     if (decoded && Array.isArray(client[decoded.userId])) {
@@ -33,8 +33,8 @@ const socket = (io) => {
 }
 const sendReportToUser = (user_id, event_name, data) => {
     try {
-        if (global.client["60f58052bb03ff11f9bafc62"]) {
-            for (let id of client["60f58052bb03ff11f9bafc62"]) {
+        if (global.client[user_id]) {
+            for (let id of client[user_id]) {
                 global.io.to(id).emit(event_name, data)
             }
         }
