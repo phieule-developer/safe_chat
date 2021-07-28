@@ -27,7 +27,10 @@ let Schema = new mongoose.Schema({
         required: true,
         default: Date.now()
     },
-    status: { type: Number, default: 0 },
+    status: { 
+        type: Number, 
+        default: 0 
+    },
 
 });
 

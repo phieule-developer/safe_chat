@@ -10,27 +10,40 @@ let Schema = new mongoose.Schema({
         type: String,
         default: ""
     },
-    members:[
+    members: [
         {
-            type: mongoose.Types.ObjectId, //HERE
+            type: mongoose.Types.ObjectId,
             ref: DATABASE_NAME.USER,
-            require:true
+            require: true
         }
     ],
-    type: { 
+    type: {
         type: Number,
-        default: 0 
+        require: true,
+        default: 0
     },
-    last_update: { 
-        type: Number, 
+    last_message: {
+        type: String,
+        default: ""
+    },
+    last_update: {
+        type: Number,
         default: Date.now()
     },
-    created_at: { 
-        type: Number, 
+    created_at: {
+        type: Number,
         default: Date.now()
     },
-    status: { type: Number,default: 0 },
-    
+    created_by: {
+        type: mongoose.Types.ObjectId,
+        ref: DATABASE_NAME.USER,
+        require: true
+    },
+    status: {
+        type: Number,
+        default: 0
+    },
+
 });
 
 mongoose.model(DATABASE_NAME.CONVERSATION, Schema)

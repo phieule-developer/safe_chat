@@ -49,6 +49,25 @@ module.exports ={
             }
         })
     },
+    checkExistsConservationGroup:async (user_list)=>{
+        return new Promise(async (resolve,reject)=>{
+            user_list.sort();
+            let list = [];
+            for (let index = 0; index < user_list.length; index++) {
+                const element = Types.ObjectId(user_list[index]);
+                list.push(element);
+            };
+            let check = await conversationModel.findOne({
+                members:list,
+                type:1
+            });
+            if(check){
+                resolve(check)
+            }else{
+                reject(true);
+            }
+        })
+    },
     checkExistsConservationID:async (id)=>{
         return new Promise (async (resolve,reject)=>{
             let check = await conversationModel.findOne({
@@ -61,5 +80,6 @@ module.exports ={
                 reject(true);
             }
         })
-    }
+    },
+
 }
