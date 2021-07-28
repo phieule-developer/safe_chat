@@ -35,8 +35,8 @@ module.exports = {
                         type: 0,
                         content,
                     };
-                    await messsageService.create(body);
-                    sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message: body }) // gửi tới thành viên
+                    let message = await messsageService.create(body);
+                    sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message }) // gửi tới thành viên
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
                 }
                 else {
@@ -51,11 +51,10 @@ module.exports = {
                         last_update: body.created_at,
                         last_message: body.content
                     }
-                    await Promise.all([
-                        conversationService.update(conversation_id, body_update),
-                        messsageService.create(body)
-                    ]);
-                    sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message: body }) // gửi tới thành viên
+                    let message = await messsageService.create(body);
+                    await conversationService.update(conversation_id, body_update);
+
+                    sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message }) // gửi tới thành viên
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
                 }
             } else {
@@ -70,15 +69,13 @@ module.exports = {
                     last_update: body.created_at,
                     last_message: body.content
                 }
-                await Promise.all([
-                    conversationService.update(conversation_id, body_update),
-                    messsageService.create(body)
-                ]);
+                let message = await messsageService.create(body);
+                await conversationService.update(conversation_id, body_update);
                 let conversation = await conversationService.getOneById(receiver_id);
                 for (let i = 0; i < conversation.members.length; i++) {
                     let receiver_id = conversation.members[i];
                     if (receiver_id != req.userId) {
-                        sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message: body }) // gửi tới tất cả thành viên
+                        sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message }) // gửi tới tất cả thành viên
                     }
                 }
                 return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
