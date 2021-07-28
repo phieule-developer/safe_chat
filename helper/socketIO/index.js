@@ -15,7 +15,6 @@ const socket = (io) => {
                         client[decoded.userId] = [];
                         client[decoded.userId].push(socket.id);
                     }
-                    console.log(client);
                 }
             }
             socket.on('disconnect', async () => {
@@ -25,7 +24,6 @@ const socket = (io) => {
                     if (decoded && Array.isArray(client[decoded.userId])) {
                         if (client[decoded.userId].indexOf(socket.id) != -1) {
                             client[decoded.userId] = client[decoded.userId].filter(e => e !== socket.id);
-                            console.log(client);
                         }
                     }
                 }
@@ -42,7 +40,6 @@ const sendReportToUser = (user_id, event_name, data) => {
             }
         }
     } catch (error) {
-        console.log(error);
     }
 }
 module.exports = {
