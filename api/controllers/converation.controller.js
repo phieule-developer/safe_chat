@@ -45,6 +45,9 @@ module.exports = {
         try {
             let filter = [
                 {
+                    $match: { members: { $in: [Types.ObjectId(req.userId)] } }
+                },
+                {
                     $lookup: {
                         from: DATABASE_NAME.USER,
                         let: { "member": "$members" },
@@ -57,7 +60,7 @@ module.exports = {
                                         },
                                         {
                                             _id: { $ne: Types.ObjectId(req.userId) }
-                                        }
+                                        },
                                     ]
                                 }
                             }
@@ -65,6 +68,7 @@ module.exports = {
                         "as": "member"
                     }
                 },
+
                 {
                     $sort: {
                         last_update: -1
@@ -83,6 +87,7 @@ module.exports = {
             return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, ans, version);
 
         } catch (error) {
+            console.log(error);
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
         }
     },
