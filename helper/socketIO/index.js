@@ -15,14 +15,17 @@ const socket = (io) => {
                         client[decoded.userId] = [];
                         client[decoded.userId].push(socket.id);
                     }
+                    console.log(client);
                 }
             }
             socket.on('disconnect', async () => {
+
                 if (token) {
                     const decoded = await jwt.verify(token, CONST.JWT_SCRET);
                     if (decoded && Array.isArray(client[decoded.userId])) {
                         if (client[decoded.userId].indexOf(socket.id) != -1) {
-                            client[decoded.userId] = client[decoded.userId].filter(e => e !== socket.id)
+                            client[decoded.userId] = client[decoded.userId].filter(e => e !== socket.id);
+                            console.log(client);
                         }
                     }
                 }
