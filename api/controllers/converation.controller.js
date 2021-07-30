@@ -3,7 +3,9 @@ const { CONST } = require('../../constants/const');
 const { ApiResponse } = require('../../helper/response/Api_Response');
 let conservationService = require('../services/conversation.service');
 const { DATABASE_NAME } = require('../../constants/database');
-const { Types } = require('mongoose')
+const { Types } = require('mongoose');
+let objectID = require('mongodb').ObjectID
+
 const version = 1;
 module.exports = {
     create: async (req, res) => {
@@ -82,7 +84,7 @@ module.exports = {
                 },
 
             ];
-            let ans = await conservationService.getAll(filter);
+            let ans = await conservationService.getFilter(filter);
 
             return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, ans, version);
 
@@ -93,11 +95,88 @@ module.exports = {
     getOne: async (req, res) => {
         try {
             let conversation_id = req.params.id;
+            let filter = [
+                {
+                    $match: {
+                        _id: Types.ObjectId(conversation_id),
+                        members: { $in: [Types.ObjectId(req.userId)] }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: DATABASE_NAME.USER,
+                        let: { "member": "$members" },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: { $in: ["$_id", "$$member"] },
+                                }
+                            }
+                        ],
+                        "as": "member"
+                    }
+                },
+                {
+                    $project: {
+                        "members": 0,
+                    }
 
-            let ans = await conservationService.getOneById(conversation_id);
+                },
+            ]
+            let ans = await conservationService.getFilter(filter);
+            let result = ans.length > 0 ? ans[0] : {};
+            return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, result, version);
 
-            return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, ans, version);
+        } catch (error) {
+            return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
+        }
+    },
+    update: async (req, res) => {
+        try {
+            let id = req.params.id;
 
+            let body_update = {};
+            if (req.body.avatar) {
+                body_update.avatar = req.body.avatar;
+            };
+            if (req.body.name) {
+                body_update.name = req.body.name;
+            };
+
+            let result = await conservationService.update(id, body_update);
+
+            return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, result, version);
+
+        } catch (error) {
+            return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
+        }
+    },
+    addMember: async (req, res) => {
+        try {
+            let id = req.params.id;
+            let { members } = await conservationService.getOneById(id);
+
+            if (objectID.isValid(req.body.user_id)) {
+                members.push(req.body.user_id);
+                members.sort();
+                let result = await conservationService.update(id, { members });
+
+                return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, result, version);
+            } else {
+                return ApiResponse(res, 400, "Định dạng không chính xác", {}, version);
+            }
+
+        } catch (error) {
+            return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
+        }
+    },
+    leaveConversation: async (req, res) => {
+        try {
+            let id = req.params.id;
+            let { members } = await conservationService.getOneById(id);
+            let new_members = members.filter(e => e != req.userId);
+            let result = await conservationService.update(id, { members: new_members });
+            return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, result, version);
         } catch (error) {
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
         }

@@ -5,11 +5,11 @@ module.exports ={
         let result = await conversationModel.create(body);
         return result;
     },
-    getAll:async (filter)=>{
+    getFilter:async (filter)=>{
         let result = await conversationModel.aggregate(filter);
         return result;
     },
-    getOneById:async (id) =>{
+    getOneById:async (id)=>{
         let result = await conversationModel.findById(id);
         return result;
     },
