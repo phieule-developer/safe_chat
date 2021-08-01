@@ -28,6 +28,7 @@ module.exports = {
                         req.body.members = user_list;
                         req.body.type = 1;
                         req.body.created_by = req.userId;
+                        req.body.last_update = Date.now();
 
                         let ans = await conservationService.create(req.body);
                         return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, ans, version);
