@@ -3,6 +3,7 @@ const { CONST } = require("../../constants/const");
 const { ApiResponse } = require('../../helper/response/Api_Response');
 const conversationService = require('../services/conversation.service');
 const messsageService = require('../services/message.service');
+const userService = require('../services/user.service');
 const { sendReportToUser } = require('../../helper/socketIO/index');
 const version = 1;
 
@@ -35,8 +36,12 @@ module.exports = {
                         type: 0,
                         content,
                     };
+                    let user = await userService.getOneById(req.userId);
+
                     let message = await messsageService.create(body);
-                    sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message }) // gửi tới thành viên
+
+                    sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message,fullname: user.fullname,avatar:user.avatar }) // gửi tới thành viên
+                    
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
                 }
                 else {

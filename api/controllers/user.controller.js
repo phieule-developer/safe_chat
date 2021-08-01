@@ -68,13 +68,6 @@ module.exports = {
                     }
                 },
                 {
-                    $addFields: {
-                        email_lower: {
-                            $toLower: "$email"
-                        },
-                    }
-                },
-                {
                     $match: {
                         _id: { $ne: Types.ObjectId(req.userId) },
                         $or: [
@@ -82,12 +75,7 @@ module.exports = {
                                 name_lower: {
                                     $regex: text ? text.toLowerCase() : ""
                                 }
-                            },
-                            {
-                                email_lower: {
-                                    $regex: text ? text.toLowerCase() : ""
-                                }
-                            },
+                            }
                         ]
                     }
                 },
@@ -96,7 +84,6 @@ module.exports = {
                         "password": 0,
                         "token_verify": 0,
                         "name_lower": 0,
-                        "email_lower": 0
                     }
                 }
             ];

@@ -11,7 +11,8 @@ module.exports = {
         },
         EVENT:{
             PERSON_MESSAGE:"PERSON_MESSAGE",
-            GROUP_MESSAGE:"GROUP_MESSAGE"
+            GROUP_MESSAGE:"GROUP_MESSAGE",
+            CREATE_GROUP:"CREATE_GROUP"
         }
     },
     
