@@ -28,16 +28,16 @@ module.exports = {
                 body_update.sex = req.body.sex;
             };
             if (req.body.fullname) {
-                body_update.sex = req.body.sex;
+                body_update.fullname = req.body.fullname;
             };
 
-            let result =  await userService.updateMe(req.userId, body_update);
+            let result = await userService.updateMe(req.userId, body_update);
 
-            if(result){
+            if (result) {
                 result.password = "";
                 result.token_verify = "";
             }
-            return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS,result, version);
+            return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, result, version);
 
         } catch (error) {
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
@@ -76,7 +76,7 @@ module.exports = {
                 },
                 {
                     $match: {
-                        _id:{$ne:Types.ObjectId(req.userId)},
+                        _id: { $ne: Types.ObjectId(req.userId) },
                         $or: [
                             {
                                 name_lower: {
