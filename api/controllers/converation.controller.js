@@ -37,7 +37,7 @@ module.exports = {
                         let conversation = await conservationService.create(req.body);
                         for (let i = 0; i < member_list.length; i++) {
                             let user_id = member_list[i];
-                            sendReportToUser(user_id,CONST.EVENT.GROUP_MESSAGE,conversation,version);
+                            sendReportToUser(user_id,CONST.EVENT.CREATE_GROUP,conversation,version);
                         }
                         return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, ans, version);
                     } else {
