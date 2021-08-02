@@ -14,7 +14,7 @@ module.exports = {
 
             let { user_list } = req.body;
 
-            let member_list  = req.body.user_list;
+            let member_list = req.body.user_list;
 
             user_list.push(req.userId);
             let hasDuplicate = user_list.some((val, i) => user_list.indexOf(val) !== i);
@@ -37,9 +37,9 @@ module.exports = {
                         let conversation = await conservationService.create(req.body);
                         for (let i = 0; i < member_list.length; i++) {
                             let user_id = member_list[i];
-                            sendReportToUser(user_id,CONST.EVENT.CREATE_GROUP,conversation,version);
+                            sendReportToUser(user_id, CONST.EVENT.CREATE_GROUP, conversation, version);
                         }
-                        return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, ans, version);
+                        return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, conversation, version);
                     } else {
                         return ApiResponse(res, 400, "Nhóm phải có từ 3 thành viên trở lên", {}, version);
                     }
