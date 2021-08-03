@@ -22,11 +22,7 @@ module.exports = {
             if (hasDuplicate) {
                 return ApiResponse(res, 400, "Nhóm đang có thành viên xuất hiện nhiều lần", {}, version);
             } else {
-                let error, result;
 
-                [error, result] = await to(conservationService.checkExistsConservationGroup(user_list));
-
-                if (error) {
                     if (Array.isArray(user_list) && user_list.length >= 3) {
 
                         req.body.members = user_list;
@@ -43,9 +39,6 @@ module.exports = {
                     } else {
                         return ApiResponse(res, 400, "Nhóm phải có từ 3 thành viên trở lên", {}, version);
                     }
-                } else {
-                    return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, result, version);
-                }
             }
 
         } catch (error) {
