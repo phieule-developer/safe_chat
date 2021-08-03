@@ -81,5 +81,18 @@ module.exports ={
             }
         })
     },
+    checkUserIDConversation:async (conversation_id,user_id)=>{
+        return new Promise(async (resolve,reject)=>{
+            let check = await conversationModel.findOne({
+                _id:conversation_id,
+                members:{$in:[user_id]}
+            });
+            if(check){
+                resolve(true);
+            }else{
+                reject(true);
+            }
+        })
+    }
 
 }

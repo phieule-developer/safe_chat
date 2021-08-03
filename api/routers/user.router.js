@@ -6,5 +6,6 @@ let { verifyToken } = require('../middlewares/verify_token');
 router.get("/me", verifyToken, userController.getMe);
 router.put("/", verifyToken, userController.updateMe);
 router.get("/",verifyToken,userController.getAll);
+router.get("/add_conversation/:conversation_id",verifyToken,userController.searchUserAddConversation);
 
 module.exports = router;

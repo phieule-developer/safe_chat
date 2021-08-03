@@ -40,8 +40,8 @@ module.exports = {
 
                     let message = await messsageService.create(body);
 
-                    sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message,fullname: user.fullname,avatar:user.avatar }) // gửi tới thành viên
-                    
+                    sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message, fullname: user.fullname, avatar: user.avatar }) // gửi tới thành viên
+
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
                 }
                 else {
@@ -59,7 +59,7 @@ module.exports = {
                     let message = await messsageService.create(body);
                     await conversationService.update(conversation_id, body_update);
 
-                    sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message }) // gửi tới thành viên
+                    sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message });
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
                 }
             } else {
@@ -80,7 +80,7 @@ module.exports = {
                 for (let i = 0; i < conversation.members.length; i++) {
                     let receiver_id = conversation.members[i];
                     if (receiver_id != req.userId) {
-                        sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message }) // gửi tới tất cả thành viên
+                        sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message });
                     }
                 }
                 return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
@@ -96,13 +96,12 @@ module.exports = {
 
             let receiver_id = req.params.id;
 
-            let error, conversation_id;
+            let error, conversation_id, result;
 
             [error, conversation_id] = await to(conversationService.checkExistsConservationID(receiver_id));
 
             if (error) {
                 [error, conversation_id] = await to(conversationService.checkExistsConservationMember(req.userId, receiver_id));
-
                 if (error) {
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, [], version);
                 } else {
@@ -110,8 +109,14 @@ module.exports = {
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, ans, version);
                 }
             } else {
-                let ans = await messsageService.getAllConversation(conversation_id, page_index, page_size);
-                return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, ans, version);
+                [error, result] = await to(conversationService.checkUserIDConversation(conversation_id, req.userId));
+                if (result) {
+                    let ans = await messsageService.getAllConversation(conversation_id, page_index, page_size);
+                    return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, ans, version);
+                } else {
+                    return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, [], version);
+                }
+
             }
         } catch (error) {
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);

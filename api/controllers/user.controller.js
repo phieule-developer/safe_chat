@@ -2,6 +2,7 @@ const { Types } = require('mongoose');
 const { CONST } = require('../../constants/const');
 const { ApiResponse } = require('../../helper/response/Api_Response');
 const userService = require('../services/user.service');
+const conversationService = require('../services/conversation.service');
 const version = 1;
 
 module.exports = {
@@ -93,5 +94,54 @@ module.exports = {
         } catch (error) {
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
         }
-    }
+    },
+    searchUserAddConversation: async (req, res) => {
+        try {
+            let text = req.query.text;
+
+            let {members} = await conversationService.getOneById(req.params.conversation_id);
+
+            let filter = [
+                {
+                    $addFields: {
+                        name_lower: {
+                            $toLower: "$fullname"
+                        },
+                    }
+                },
+                {
+                    $match: {
+                        $and:[
+                            {
+                                _id: { $ne: Types.ObjectId(req.userId) },
+                            },
+                            {
+                                _id:{$nin:members}
+                            }
+                        ],
+                        $or: [
+                            {
+                                name_lower: {
+                                    $regex: text ? text.toLowerCase() : ""
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    $project: {
+                        "password": 0,
+                        "token_verify": 0,
+                        "name_lower": 0,
+                    }
+                }
+            ];
+            let result = await userService.getAll(filter);
+
+            return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, result, version);
+
+        } catch (error) {
+            return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
+        }
+    },
 }

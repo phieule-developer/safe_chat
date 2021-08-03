@@ -23,22 +23,22 @@ module.exports = {
                 return ApiResponse(res, 400, "Nhóm đang có thành viên xuất hiện nhiều lần", {}, version);
             } else {
 
-                    if (Array.isArray(user_list) && user_list.length >= 3) {
+                if (Array.isArray(user_list) && user_list.length >= 3) {
+                    user_list.sort();
+                    req.body.members = user_list;
+                    req.body.type = 1;
+                    req.body.created_by = req.userId;
+                    req.body.last_update = Date.now();
 
-                        req.body.members = user_list;
-                        req.body.type = 1;
-                        req.body.created_by = req.userId;
-                        req.body.last_update = Date.now();
-
-                        let conversation = await conservationService.create(req.body);
-                        for (let i = 0; i < member_list.length; i++) {
-                            let user_id = member_list[i];
-                            sendReportToUser(user_id, CONST.EVENT.CREATE_GROUP, conversation, version);
-                        }
-                        return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, conversation, version);
-                    } else {
-                        return ApiResponse(res, 400, "Nhóm phải có từ 3 thành viên trở lên", {}, version);
+                    let conversation = await conservationService.create(req.body);
+                    for (let i = 0; i < member_list.length; i++) {
+                        let user_id = member_list[i];
+                        sendReportToUser(user_id, CONST.EVENT.CREATE_GROUP, conversation, version);
                     }
+                    return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, conversation, version);
+                } else {
+                    return ApiResponse(res, 400, "Nhóm phải có từ 3 thành viên trở lên", {}, version);
+                }
             }
 
         } catch (error) {
@@ -126,7 +126,7 @@ module.exports = {
                 },
             ]
             let ans = await conservationService.getFilter(filter);
-            let result = ans.length > 0 ? ans[0] : {};
+            let result = ans.length > 0 ? ans[0] : null;
             return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, result, version);
 
         } catch (error) {
@@ -162,7 +162,6 @@ module.exports = {
                 members.push(req.body.user_id);
                 members.sort();
                 let result = await conservationService.update(id, { members });
-
                 return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, result, version);
             } else {
                 return ApiResponse(res, 400, "Định dạng không chính xác", {}, version);
