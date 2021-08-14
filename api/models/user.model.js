@@ -17,7 +17,7 @@ let Schema = new mongoose.Schema({
     },
     sex: {
         type: Number,
-        default: 0,
+        default: 1,
         enum: [0, 1]
     },
     email: {
@@ -44,6 +44,11 @@ let Schema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
+        default: ""
+    },
+    publicKey: {
+        type: String,
+        require:true,
         default: ""
     },
     status: {
