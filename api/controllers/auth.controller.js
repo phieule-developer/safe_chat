@@ -4,9 +4,11 @@ const authService = require('../services/auth.service');
 const userService = require('../services/user.service');
 const { CONST } = require('../../constants/const');
 const bcrypt = require('bcrypt');
-
+var generateSafeId = require('generate-safe-id');
 const { ApiResponse } = require('../../helper/response/Api_Response');
 const version = 1;
+
+
 module.exports = {
     login: async (req, res) => {
         try {
@@ -34,7 +36,7 @@ module.exports = {
     },
     register: async (req, res) => {
         try {
-            let { email, password, confirm_password, fullname } = req.body;
+            let { email, password, confirm_password } = req.body;
 
             let error, result;
 
@@ -52,6 +54,7 @@ module.exports = {
 
                     req.body.password = await bcrypt.hash(password, 10);
 
+                    req.body.token_verify = generateSafeId();
                     let ans = await authService.register(req.body);
 
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, ans, version);
