@@ -15,6 +15,11 @@ let Schema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    phone: {
+        type: String,
+        require:true,
+        default: ""
+    },
     sex: {
         type: Number,
         default: 1,
@@ -46,7 +51,7 @@ let Schema = new mongoose.Schema({
         required: true,
         default: ""
     },
-    publicKey: {
+    public_key: {
         type: String,
         require:true,
         default: ""

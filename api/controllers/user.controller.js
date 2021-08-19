@@ -32,6 +32,12 @@ module.exports = {
                 body_update.fullname = req.body.fullname;
             };
 
+            if (req.body.phone) {
+                body_update.phone = req.body.phone;
+            };
+            if (req.body.last_online) {
+                body_update.last_online = req.body.last_online;
+            };
             let result = await userService.updateMe(req.userId, body_update);
 
             if (result) {
