@@ -158,14 +158,32 @@ module.exports = {
             let id = req.params.id;
             let { members } = await conservationService.getOneById(id);
 
-            if (objectID.isValid(req.body.user_id)) {
-                members.push(req.body.user_id);
+            let { new_member } = req.body;
+
+            for (let i = 0; i < new_member.length; i++) {
+                if (!objectID.isValid(new_member[i])) {
+                    return ApiResponse(res, 400, "Định dạng không chính xác", {}, version);
+                }
+            }
+            let hasDuplicateNewMember = new_member.some((val, i) => new_member.indexOf(val) !== i);
+
+            if (hasDuplicateNewMember) {
+                return ApiResponse(res, 400, CONST.MESSAGE.ERROR, "Một người đang được thêm vào 2 lần", version);
+
+            }
+            members.push(new_member);
+
+            let hasDuplicate = members.some((val, i) => members.indexOf(val) !== i);
+
+            if (hasDuplicate) {
+                return ApiResponse(res, 400, CONST.MESSAGE.ERROR, "Lỗi dữ liệu", version);
+
+            } else {
                 members.sort();
                 let result = await conservationService.update(id, { members });
                 return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, result, version);
-            } else {
-                return ApiResponse(res, 400, "Định dạng không chính xác", {}, version);
             }
+
 
         } catch (error) {
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);

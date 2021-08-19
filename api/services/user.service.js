@@ -10,10 +10,10 @@ module.exports = {
         return user;
     },
     updateMe: async (id, body) => {
-        let user = await userModel.findByIdAndUpdate(id, body);
+        let user = await userModel.findByIdAndUpdate(id, body, { new: true });
         return user;
     },
-    getAll:async (filter) => {
+    getAll: async (filter) => {
         let user = await userModel.aggregate(filter);
         return user;
     },
