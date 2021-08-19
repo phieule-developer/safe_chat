@@ -159,7 +159,6 @@ module.exports = {
             let { members } = await conservationService.getOneById(id);
 
             let { new_member } = req.body;
-
             for (let i = 0; i < new_member.length; i++) {
                 if (!objectID.isValid(new_member[i])) {
                     return ApiResponse(res, 400, "Định dạng không chính xác", {}, version);
@@ -171,8 +170,11 @@ module.exports = {
                 return ApiResponse(res, 400, CONST.MESSAGE.ERROR, "Một người đang được thêm vào 2 lần", version);
 
             }
-            members.push(new_member);
-
+            members = [
+                ...new_member,
+                ...members
+            ];
+            console.log(members);
             let hasDuplicate = members.some((val, i) => members.indexOf(val) !== i);
 
             if (hasDuplicate) {
