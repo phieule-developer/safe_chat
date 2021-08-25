@@ -8,6 +8,7 @@ router.get("/",verifyToken,conservationController.getAll);
 router.get("/:id",verifyToken,conservationController.getOne);
 router.put("/:id",verifyToken,conservationController.update);
 router.put("/add/:id",verifyToken,conservationController.addMember);
+router.put("/seen/:id",verifyToken,conservationController.updateSeen);
 router.delete("/leave/:id",verifyToken,conservationController.leaveConversation);
 
 

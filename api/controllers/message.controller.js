@@ -27,6 +27,7 @@ module.exports = {
                     req.body.last_message = content;
                     req.body.created_at = Date.now();
                     req.body.last_update = Date.now();
+                    req.body.is_seen = [req.userId];
                     let conversation = await conversationService.create(req.body);
 
                     let body = {
@@ -54,7 +55,8 @@ module.exports = {
                     };
                     let body_update = {
                         last_update: body.created_at,
-                        last_message: body.content
+                        last_message: body.content,
+                        is_seen :[req.userId]
                     }
                     let message = await messsageService.create(body);
                     await conversationService.update(conversation_id, body_update);

@@ -39,6 +39,13 @@ let Schema = new mongoose.Schema({
         ref: DATABASE_NAME.USER,
         require: true
     },
+    is_seen: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: DATABASE_NAME.USER,
+            default:[]
+        }
+    ],
     status: {
         type: Number,
         default: 0
