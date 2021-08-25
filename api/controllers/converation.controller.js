@@ -49,7 +49,9 @@ module.exports = {
         try {
             let filter = [
                 {
-                    $match: { members: { $in: [Types.ObjectId(req.userId)] } }
+                    $match: { 
+                        members: { $in: [Types.ObjectId(req.userId)] },              
+                    }
                 },
                 {
                     $lookup: {
@@ -72,7 +74,11 @@ module.exports = {
                         "as": "member"
                     }
                 },
-
+                // {
+                //     $addFields: {
+                //         seen:{ $in: [ "$is_seen",[[Types.ObjectId(req.userId)]] ] }
+                //     }
+                //   },
                 {
                     $sort: {
                         last_update: -1
@@ -80,7 +86,19 @@ module.exports = {
                 },
                 {
                     $project: {
-                        "members": 0,
+                        "_id":1,
+                        "avatar":1,
+                        "name":1,
+                        "type":1,
+                        "last_message":1,
+                        "last_update":1,
+                        "member":1,
+                        "created_at":1,
+                        "seen":1,
+                        "seen":
+                        {
+                            $cond: { if: { $in: [ "$is_seen",[[Types.ObjectId(req.userId)] ]] }, then:true, else: false }
+                        }
                     }
 
                 },
@@ -91,6 +109,7 @@ module.exports = {
             return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, ans, version);
 
         } catch (error) {
+            console.log(error);
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
         }
     },
@@ -174,7 +193,6 @@ module.exports = {
                 ...new_member,
                 ...members
             ];
-            console.log(members);
             let hasDuplicate = members.some((val, i) => members.indexOf(val) !== i);
 
             if (hasDuplicate) {
@@ -191,19 +209,18 @@ module.exports = {
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
         }
     },
-    updateSeen:async (req,res)=>{
+    updateSeen: async (req, res) => {
         try {
             let id = req.params.id;
             let { is_seen } = await conservationService.getOneById(id);
-            if(!is_seen.includes(req.userId)){
+            if (!is_seen.includes(req.userId)) {
                 is_seen.push(req.userId);
                 let result = await conservationService.update(id, { is_seen });
-                return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS,result, version);
-            }else{
+                return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, result, version);
+            } else {
                 return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
             }
         } catch (error) {
-            console.log(error);
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
         }
     },
