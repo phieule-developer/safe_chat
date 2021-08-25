@@ -49,8 +49,8 @@ module.exports = {
         try {
             let filter = [
                 {
-                    $match: { 
-                        members: { $in: [Types.ObjectId(req.userId)] },              
+                    $match: {
+                        members: { $in: [Types.ObjectId(req.userId)] },
                     }
                 },
                 {
@@ -74,11 +74,6 @@ module.exports = {
                         "as": "member"
                     }
                 },
-                // {
-                //     $addFields: {
-                //         seen:{ $in: [ "$is_seen",[[Types.ObjectId(req.userId)]] ] }
-                //     }
-                //   },
                 {
                     $sort: {
                         last_update: -1
@@ -86,19 +81,18 @@ module.exports = {
                 },
                 {
                     $project: {
-                        "_id":1,
-                        "avatar":1,
-                        "name":1,
-                        "type":1,
-                        "last_message":1,
-                        "last_update":1,
-                        "member":1,
-                        "created_at":1,
-                        "seen":1,
-                        "seen":
-                        {
-                            $cond: { if: { $in: [ "$is_seen",[[Types.ObjectId(req.userId)] ]] }, then:true, else: false }
-                        }
+                        "_id": 1,
+                        "avatar": 1,
+                        "name": 1,
+                        "type": 1,
+                        "last_message": 1,
+                        "last_update": 1,
+                        "member": 1,
+                        "created_at": 1,
+                        "seen": 1,
+                        "seen": {
+                            $in: [Types.ObjectId(req.userId), "$is_seen"]
+                        },
                     }
 
                 },
