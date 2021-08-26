@@ -107,12 +107,22 @@ module.exports = {
                 if (error) {
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, [], version);
                 } else {
+                    let { is_seen } = await conversationService.getOneById(conversation_id);
+                    if (!is_seen.includes(req.userId)) {
+                        is_seen.push(req.userId);
+                        await conversationService.update(conversation_id, { is_seen });
+                    }
                     let ans = await messsageService.getAllConversation(conversation_id, page_index, page_size);
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, ans, version);
                 }
             } else {
                 [error, result] = await to(conversationService.checkUserIDConversation(conversation_id, req.userId));
                 if (result) {
+                    let { is_seen } = await conversationService.getOneById(conversation_id);
+                    if (!is_seen.includes(req.userId)) {
+                        is_seen.push(req.userId);
+                        await conversationService.update(conversation_id, { is_seen });
+                    }
                     let ans = await messsageService.getAllConversation(conversation_id, page_index, page_size);
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, ans, version);
                 } else {
