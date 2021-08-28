@@ -202,6 +202,21 @@ module.exports = {
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
         }
     },
+    updateSeen: async (req, res) => {
+        try {
+            let id = req.params.id;
+            let { is_seen } = await conservationService.getOneById(id);
+            if (!is_seen.includes(req.userId)) {
+                is_seen.push(req.userId);
+                let result = await conservationService.update(id, { is_seen });
+                return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, result, version);
+            } else {
+                return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
+            }
+        } catch (error) {
+            return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
+        }
+    },
     leaveConversation: async (req, res) => {
         try {
             let id = req.params.id;
