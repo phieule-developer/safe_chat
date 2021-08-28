@@ -28,6 +28,8 @@ module.exports = {
                     req.body.last_message = content;
                     req.body.created_at = Date.now();
                     req.body.last_update = Date.now();
+                    req.body.type = 0;
+                    req.body.type_last_message = type;
                     req.body.is_seen = [req.userId];
                     let conversation = await conversationService.create(req.body);
 
