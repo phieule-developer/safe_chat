@@ -14,6 +14,7 @@ module.exports = {
             let { receiver_id } = req.params;
             let error, conversation_id;
 
+            let type = Number(req.body.type) ? Number(req.body.type) : 0;
             [error, conversation_id] = await to(conversationService.checkExistsConservationID(receiver_id));
 
             if (error) {
@@ -34,7 +35,7 @@ module.exports = {
                         conversation_id: conversation._id,
                         created_at: conversation.last_update,
                         sender_id: req.userId,
-                        type: 0,
+                        type,
                         content,
                     };
                     let user = await userService.getOneById(req.userId);
@@ -49,14 +50,14 @@ module.exports = {
                     let body = {
                         conversation_id,
                         sender_id: req.userId,
-                        type: 0,
+                        type,
                         created_at: Date.now(),
                         content,
                     };
                     let body_update = {
                         last_update: body.created_at,
                         last_message: body.content,
-                        is_seen :[req.userId]
+                        is_seen: [req.userId]
                     }
                     let message = await messsageService.create(body);
                     await conversationService.update(conversation_id, body_update);
