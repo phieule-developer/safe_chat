@@ -57,6 +57,7 @@ module.exports = {
                     let body_update = {
                         last_update: body.created_at,
                         last_message: body.content,
+                        type_last_message: type,
                         is_seen: [req.userId]
                     }
                     let message = await messsageService.create(body);
@@ -75,6 +76,7 @@ module.exports = {
                 };
                 let body_update = {
                     last_update: body.created_at,
+                    type_last_message: type,
                     last_message: body.content
                 }
                 let message = await messsageService.create(body);
