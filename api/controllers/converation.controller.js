@@ -85,6 +85,7 @@ module.exports = {
                         "avatar": 1,
                         "name": 1,
                         "type": 1,
+                        "type_last_message": 1,
                         "last_message": 1,
                         "last_update": 1,
                         "member": 1,
