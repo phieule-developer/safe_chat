@@ -27,7 +27,7 @@ module.exports = {
 
                 let access_token = await jwt.sign(payload, CONST.JWT_SCRET);
 
-                return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, { access_token }, version);
+                return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, { access_token, id: result._id }, version);
             }
         } catch (error) {
             return ApiResponse(res, 400, CONST.MESSAGE.ERROR, {}, version);

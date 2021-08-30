@@ -26,6 +26,10 @@ let Schema = new mongoose.Schema({
         type: String,
         default: ""
     },
+    type_last_message: {
+        type: Number,
+        default: 0
+    },
     last_update: {
         type: Number,
         default: Date.now()
@@ -43,7 +47,7 @@ let Schema = new mongoose.Schema({
         {
             type: mongoose.Types.ObjectId,
             ref: DATABASE_NAME.USER,
-            default:[]
+            default: []
         }
     ],
     status: {
