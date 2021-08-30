@@ -62,6 +62,18 @@ module.exports = {
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
         }
     },
+    getOneByPublicKey: async (req, res) => {
+        try {
+            let public_key = req.params.public_key;
+
+            let ans = await userService.getOneByPublicKey(public_key);
+
+            return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, ans, version);
+
+        } catch (error) {
+            return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
+        }
+    },
     getAll: async (req, res) => {
         try {
             let text = req.query.text;
