@@ -56,6 +56,13 @@ let Schema = new mongoose.Schema({
         require:true,
         default: ""
     },
+    friends: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: DATABASE_NAME.USER,
+            default: []
+        }
+    ],
     status: {
         type: Number,
         default: 0
