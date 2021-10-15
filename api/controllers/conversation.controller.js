@@ -47,8 +47,6 @@ module.exports = {
     },
     getAll: async (req, res) => {
         try {
-            var start = new Date().toLocaleString({timeZone: "Asia/Ho_Chi_Minh"});
-            console.log(start);
             let filter = [
                 {
                     $match: {

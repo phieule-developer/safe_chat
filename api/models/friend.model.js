@@ -17,6 +17,11 @@ let Schema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    created_by: {
+        type: mongoose.Types.ObjectId,
+        ref: DATABASE_NAME.USER,
+        require: true
+    },
 
 });
 
