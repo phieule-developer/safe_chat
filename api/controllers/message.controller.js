@@ -14,7 +14,7 @@ module.exports = {
             let { receiver_id } = req.params;
             let error, conversation_id;
 
-            let type = Number(req.body.type) ? Number(req.body.type) : 0;
+            let type_message = Number(req.body.type) ? Number(req.body.type) : 0;
             [error, conversation_id] = await to(conversationService.checkExistsConservationID(receiver_id));
 
             if (error) {
@@ -26,10 +26,10 @@ module.exports = {
                         receiver_id
                     ];
                     req.body.last_message = content;
+                    req.body.type = 0;
                     req.body.created_at = Date.now();
                     req.body.last_update = Date.now();
-                    req.body.type = 0;
-                    req.body.type_last_message = type;
+                    req.body.type_last_message = type_message;
                     req.body.is_seen = [req.userId];
                     let conversation = await conversationService.create(req.body);
 
@@ -37,14 +37,14 @@ module.exports = {
                         conversation_id: conversation._id,
                         created_at: conversation.last_update,
                         sender_id: req.userId,
-                        type,
+                        type: type_message,
                         content,
                     };
                     let user = await userService.getOneById(req.userId);
 
                     let message = await messsageService.create(body);
 
-                    sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message, fullname: user.fullname, avatar: user.avatar }) // gửi tới thành viên
+                    sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message, fullname: user.fullname, avatar: user.avatar, public_key: user.public_key }) // gửi tới thành viên
 
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
                 }
@@ -52,14 +52,14 @@ module.exports = {
                     let body = {
                         conversation_id,
                         sender_id: req.userId,
-                        type,
+                        type: type_message,
                         created_at: Date.now(),
                         content,
                     };
                     let body_update = {
                         last_update: body.created_at,
                         last_message: body.content,
-                        type_last_message: type,
+                        type_last_message: type_message,
                         is_seen: [req.userId]
                     }
                     let message = await messsageService.create(body);
@@ -72,13 +72,13 @@ module.exports = {
                 let body = {
                     conversation_id,
                     sender_id: req.userId,
-                    type: 0,
+                    type: type_message,
                     created_at: Date.now(),
                     content,
                 };
                 let body_update = {
                     last_update: body.created_at,
-                    type_last_message: type,
+                    type_last_message: type_message,
                     last_message: body.content
                 }
                 let message = await messsageService.create(body);
