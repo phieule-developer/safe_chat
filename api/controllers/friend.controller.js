@@ -98,6 +98,130 @@ module.exports = {
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
         }
     },
+    getAllPendingFriendRequest: async (req, res) => {
+        try {
+        
+            let filter = [
+                {
+                    $match: {
+                        friends: { $in: [Types.ObjectId(req.userId)] },
+                    }
+                },
+                {
+                    $lookup: {
+                        from: DATABASE_NAME.USER,
+                        let: { "friend": "$friends" },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $and: [
+                                        {
+                                            $expr: { $in: ["$_id", "$$friend"] },
+                                        },
+                                        {
+                                            _id: { $ne: Types.ObjectId(req.userId) }
+                                        },
+                                    ]
+                                }
+                            }
+                        ],
+                        "as": "friend"
+                    }
+                },
+                {
+                    $unwind:"$friend"
+                },
+                {
+                    $match:{
+                        created_by:Types.ObjectId(req.userId),
+                        status:0
+                    }
+                },
+                {
+                    $project: {
+                        "friend_id": "$friend._id",
+                        "fullname":"$friend.fullname",
+                        "public_key":"$friend.public_key",
+                        "avatar":"$friend.avatar",
+                        "created_at": 1,
+                        "id":req.userId,
+                        "created_by":"$created_by",
+                        "status":1
+                    }
+
+                },
+
+            ];
+            let ans = await friendService.getFilter(filter);
+
+            return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, ans, version);
+
+        } catch (error) {
+            return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
+        }
+    },
+    getAllFriendRequest: async (req, res) => {
+        try {
+        
+            let filter = [
+                {
+                    $match: {
+                        friends: { $in: [Types.ObjectId(req.userId)] },
+                    }
+                },
+                {
+                    $lookup: {
+                        from: DATABASE_NAME.USER,
+                        let: { "friend": "$friends" },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $and: [
+                                        {
+                                            $expr: { $in: ["$_id", "$$friend"] },
+                                        },
+                                        {
+                                            _id: { $ne: Types.ObjectId(req.userId) }
+                                        },
+                                    ]
+                                }
+                            }
+                        ],
+                        "as": "friend"
+                    }
+                },
+                {
+                    $unwind:"$friend"
+                },
+                {
+                    $match:{
+                        created_by:{$ne:Types.ObjectId(req.userId)},
+                        status:0
+                    }
+                },
+                {
+                    $project: {
+                        "friend_id": "$friend._id",
+                        "fullname":"$friend.fullname",
+                        "public_key":"$friend.public_key",
+                        "avatar":"$friend.avatar",
+                        "created_at": 1,
+                        "id":req.userId,
+                        "created_by":"$created_by",
+                        "status":1
+                    }
+
+                },
+
+            ];
+            let ans = await friendService.getFilter(filter);
+
+            return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, ans, version);
+
+        } catch (error) {
+            return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
+        }
+    },
     getOne: async (req, res) => {
         try {
             let friend_id = req.params.id;
