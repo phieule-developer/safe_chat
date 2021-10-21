@@ -17,8 +17,8 @@ module.exports = {
         let result = await friendModel.findById(id);
         return result;
     },
-    update: async (id, body) => {
-        let result = await friendModel.findByIdAndUpdate(id, body, { new: true });
+    update: async (filter, body) => {
+        let result = await friendModel.findOneAndUpdate(filter, body, { new: true });
         return result;
     },
     remove: async (filter) => {

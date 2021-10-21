@@ -261,9 +261,14 @@ module.exports = {
     },
     update: async (req, res) => {
         try {
-            let id = req.params.id;
+            let friend_id = req.params.user_id;
+            let friend_list = [];
 
-            await friendService.update(id, { status: 1 });
+            friend_list.push(req.userId);
+            friend_list.push(friend_id);
+
+            friend_list.sort();
+            await friendService.update({ friends: friend_list }, { status: 1 });
 
             return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
 
