@@ -20,14 +20,14 @@ module.exports = {
 
             friend_list.sort();
 
-            let friend = await friendService.getOne({friends:friend_list});
+            let friend = await friendService.getOne({ friends: friend_list });
 
-            if(friend){
-                return ApiResponse(res, 400,"Đã tồn tại", {}, version);
-            }else{
-                let body ={
-                    friends:friend_list,
-                    created_by:req.userId
+            if (friend) {
+                return ApiResponse(res, 400, "Đã tồn tại", {}, version);
+            } else {
+                let body = {
+                    friends: friend_list,
+                    created_by: req.userId
                 };
                 await friendService.create(body);
                 return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
@@ -39,7 +39,7 @@ module.exports = {
     },
     getAll: async (req, res) => {
         try {
-        
+
             let filter = [
                 {
                     $match: {
@@ -68,23 +68,23 @@ module.exports = {
                     }
                 },
                 {
-                    $unwind:"$friend"
+                    $unwind: "$friend"
                 },
                 {
-                    $match:{
-                        status:1
+                    $match: {
+                        status: 1
                     }
                 },
                 {
                     $project: {
                         "friend_id": "$friend._id",
-                        "fullname":"$friend.fullname",
-                        "public_key":"$friend.public_key",
-                        "avatar":"$friend.avatar",
+                        "fullname": "$friend.fullname",
+                        "public_key": "$friend.public_key",
+                        "avatar": "$friend.avatar",
                         "created_at": 1,
-                        "id":req.userId,
-                        "created_by":"$created_by",
-                        "status":1
+                        "id": req.userId,
+                        "created_by": "$created_by",
+                        "status": 1
                     }
 
                 },
@@ -100,7 +100,7 @@ module.exports = {
     },
     getAllPendingFriendRequest: async (req, res) => {
         try {
-        
+
             let filter = [
                 {
                     $match: {
@@ -129,24 +129,24 @@ module.exports = {
                     }
                 },
                 {
-                    $unwind:"$friend"
+                    $unwind: "$friend"
                 },
                 {
-                    $match:{
-                        created_by:Types.ObjectId(req.userId),
-                        status:0
+                    $match: {
+                        created_by: Types.ObjectId(req.userId),
+                        status: 0
                     }
                 },
                 {
                     $project: {
                         "friend_id": "$friend._id",
-                        "fullname":"$friend.fullname",
-                        "public_key":"$friend.public_key",
-                        "avatar":"$friend.avatar",
+                        "fullname": "$friend.fullname",
+                        "public_key": "$friend.public_key",
+                        "avatar": "$friend.avatar",
                         "created_at": 1,
-                        "id":req.userId,
-                        "created_by":"$created_by",
-                        "status":1
+                        "id": req.userId,
+                        "created_by": "$created_by",
+                        "status": 1
                     }
 
                 },
@@ -162,7 +162,7 @@ module.exports = {
     },
     getAllFriendRequest: async (req, res) => {
         try {
-        
+
             let filter = [
                 {
                     $match: {
@@ -191,24 +191,24 @@ module.exports = {
                     }
                 },
                 {
-                    $unwind:"$friend"
+                    $unwind: "$friend"
                 },
                 {
-                    $match:{
-                        created_by:{$ne:Types.ObjectId(req.userId)},
-                        status:0
+                    $match: {
+                        created_by: { $ne: Types.ObjectId(req.userId) },
+                        status: 0
                     }
                 },
                 {
                     $project: {
                         "friend_id": "$friend._id",
-                        "fullname":"$friend.fullname",
-                        "public_key":"$friend.public_key",
-                        "avatar":"$friend.avatar",
+                        "fullname": "$friend.fullname",
+                        "public_key": "$friend.public_key",
+                        "avatar": "$friend.avatar",
                         "created_at": 1,
-                        "id":req.userId,
-                        "created_by":"$created_by",
-                        "status":1
+                        "id": req.userId,
+                        "created_by": "$created_by",
+                        "status": 1
                     }
 
                 },
@@ -233,27 +233,27 @@ module.exports = {
 
             friend_list.sort();
 
-            let friend = await friendService.getOne({friends:friend_list});  
-            
+            let friend = await friendService.getOne({ friends: friend_list });
+
             let relation_ship = false;
-            let label ="";
-            if(friend && friend.status == 1){
-                relation_ship =true;
-            }else{
+            let label = "";
+            if (friend && friend.status == 1) {
+                relation_ship = true;
+            } else {
                 relation_ship = false;
             };
-            if(friend){
-                if(friend.status == 1){
+            if (friend) {
+                if (friend.status == 1) {
                     label = "Bạn bè"
-                }else if(friend.status == 0 && created_by.toString() == req.userId.toString()){
+                } else if (friend.status == 0 && friend.created_by.toString() == req.userId.toString()) {
                     label = "Chờ xác nhận";
-                }else{
+                } else {
                     label = "Xác nhận";
                 }
-            }else{
-                label ="Kết bạn";
+            } else {
+                label = "Kết bạn";
             }
-            return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {relation_ship,label}, version);
+            return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, { relation_ship, label }, version);
 
         } catch (error) {
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
@@ -262,10 +262,10 @@ module.exports = {
     update: async (req, res) => {
         try {
             let id = req.params.id;
-            
-            await friendService.update(id, {status:1});
 
-            return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {} , version);
+            await friendService.update(id, { status: 1 });
+
+            return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
 
         } catch (error) {
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
@@ -283,9 +283,9 @@ module.exports = {
 
             friend_list.sort();
 
-            await friendService.remove({friends:friend_list});
+            await friendService.remove({ friends: friend_list });
 
-            return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {} , version);
+            return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
 
         } catch (error) {
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
