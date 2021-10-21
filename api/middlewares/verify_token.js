@@ -22,6 +22,7 @@ module.exports = {
                     if (check) {
                         if(user.exp >= Date.now()){
                             req.userId = user.userId;
+                            await userServices.updateMe(user.userId,{last_online:Date.now()});
                             return next();
                         }else{
                             return ApiResponse(res, 401, "Token đã hết hạn", {}, version);

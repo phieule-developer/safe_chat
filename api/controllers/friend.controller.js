@@ -235,7 +235,25 @@ module.exports = {
 
             let friend = await friendService.getOne({friends:friend_list});  
             
-            return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, friend , version);
+            let relation_ship = false;
+            let label ="";
+            if(friend && friend.status == 1){
+                relation_ship =true;
+            }else{
+                relation_ship = false;
+            };
+            if(friend){
+                if(friend.status == 1){
+                    label = "Bạn bè"
+                }else if(friend.status == 0 && created_by.toString() == req.userId.toString()){
+                    label = "Chờ xác nhận";
+                }else{
+                    label = "Xác nhận";
+                }
+            }else{
+                label ="Kết bạn";
+            }
+            return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {relation_ship,label}, version);
 
         } catch (error) {
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
@@ -256,8 +274,16 @@ module.exports = {
     remove: async (req, res) => {
         try {
 
-            let id = req.params.id;
-            await friendService.remove(id);
+            let friend_id = req.params.user_id;
+
+            let friend_list = [];
+
+            friend_list.push(req.userId);
+            friend_list.push(friend_id);
+
+            friend_list.sort();
+
+            await friendService.remove({friends:friend_list});
 
             return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {} , version);
 
