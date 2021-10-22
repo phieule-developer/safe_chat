@@ -25,6 +25,7 @@ module.exports = {
                     userId: result._id
                 };
 
+                await userService.updateMe(result._id,{last_online:Date.now()})
                 let access_token = await jwt.sign(payload, CONST.JWT_SCRET);
 
                 return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, { access_token, id: result._id }, version);
