@@ -50,6 +50,10 @@ let Schema = new mongoose.Schema({
             default: []
         }
     ],
+    public_key: {
+        type: String,
+        default: ""
+    },
     status: {
         type: Number,
         default: 0
