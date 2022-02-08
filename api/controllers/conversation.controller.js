@@ -14,7 +14,7 @@ module.exports = {
     create: async (req, res) => {
         try {
 
-            let { user_list,key_list } = req.body;
+            let { user_list } = req.body;
 
             let member_list = req.body.user_list;
 
@@ -33,14 +33,6 @@ module.exports = {
                     req.body.last_update = Date.now();
 
                     let conversation = await conservationService.create(req.body);
-                    let user = await userService.getOneById(req.userId);
-
-                    for (const key of key_list) {
-                        key.conversation_id = conversation._id;
-                        key.public_key_encrypter = user.public_key;
-                    };
-
-                    await groupKeyService.insertMany(key_list);
 
                     for (let i = 0; i < member_list.length; i++) {
                         let user_id = member_list[i];
