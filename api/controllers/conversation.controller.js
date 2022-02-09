@@ -38,7 +38,7 @@ module.exports = {
                         let user_id = member_list[i];
                         sendReportToUser(user_id, CONST.EVENT.CREATE_GROUP, conversation, version);
                     }
-                    return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
+                    return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, conversation, version);
                 } else {
                     return ApiResponse(res, 400, "Nhóm phải có từ 3 thành viên trở lên", {}, version);
                 }
