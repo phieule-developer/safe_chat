@@ -56,6 +56,10 @@ module.exports = {
                         notification: {
                             title: user.fullname,
                             body: content,
+                        },
+                        data: {
+                            public_key: user.public_key,
+                            type: 0,
                         }
                     };
 
@@ -88,6 +92,10 @@ module.exports = {
                         notification: {
                             title: user.fullname,
                             body: content
+                        },
+                        data: {
+                            public_key: user.public_key,
+                            type: 0,
                         }
                     };
 
@@ -131,6 +139,10 @@ module.exports = {
                     notification: {
                         title: `${user.fullname} gửi tới ${conversation.name} `,
                         body: content
+                    },
+                    data: {
+                        public_key: user.public_key,
+                        type: 1,
                     }
                 };
 
