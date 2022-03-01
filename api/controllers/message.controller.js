@@ -7,7 +7,7 @@ const userService = require('../services/user.service');
 const { sendReportToUser } = require('../../helper/socketIO/index');
 const version = 1;
 var FCM = require('fcm-node');
-var serverkey = 'AAAAo37-Edo:APA91bGFvQSsGnTn7oyd5YnzKhaxkinVCJWMFGCGfTLO9ZZmZ3zTDmZ646Jj5R0hnIGl-FL7kc-jVBaZJAoiAIupgRGYXUhM-rn-Z6mJkXVKNX6eghqC1ny43ktvDtEk_77X-l-Tt_Qy';  
+var serverkey = 'AAAAo37-Edo:APA91bGFvQSsGnTn7oyd5YnzKhaxkinVCJWMFGCGfTLO9ZZmZ3zTDmZ646Jj5R0hnIGl-FL7kc-jVBaZJAoiAIupgRGYXUhM-rn-Z6mJkXVKNX6eghqC1ny43ktvDtEk_77X-l-Tt_Qy';
 
 module.exports = {
     sendMessage: async (req, res) => {
@@ -18,24 +18,6 @@ module.exports = {
 
             var fcm = new FCM(serverkey);
 
-            var notification = {  
-                to : "dK-truzFRx-6LUIKMV2XtR:APA91bEulgqKXKfbln6j6_GZVu35gHl2K47MMFO-FV1-uVpTNa0YTkio3R-ucS4cLOPDiFRPSv2dVt6xtM5PcX8p2agFGW7xMENc3mIsjFoQTtwH3OXZDbvaNLUYzNxduk1rMvbmnyqW",                       
-                notification : {
-                        title : 'Lê Văn Phiêu',
-                        body : 'Xin chào'
-                }
-            };
-            console.log(notification);
-
-            fcm.send(notification, function(err,response){  
-            if(err) {
-                console.log("Something has gone wrong !");
-            } else {
-                console.log("Successfully sent with resposne :",response);
-            }
-            });	
-
-            
             let type_message = Number(req.body.type) ? Number(req.body.type) : 0;
             [error, conversation_id] = await to(conversationService.checkExistsConservationID(receiver_id));
 
@@ -64,7 +46,19 @@ module.exports = {
                     };
                     let user = await userService.getOneById(req.userId);
 
+                    let receiver = await userService.getOneById(receiver_id);
+
                     let message = await messsageService.create(body);
+
+                    var notification = {
+                        to: receiver.fcm_token,
+                        notification: {
+                            title: user.fullname,
+                            body: 'Anh soái ca quá đẹp trai'
+                        }
+                    };
+
+                    fcm.send(notification, function (err, response) { });
 
                     sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message, fullname: user.fullname, avatar: user.avatar, public_key: user.public_key }) // gửi tới thành viên
 
@@ -105,13 +99,27 @@ module.exports = {
                 }
                 let message = await messsageService.create(body);
                 await conversationService.update(conversation_id, body_update);
+
+                let registration_ids_array = [];
                 let conversation = await conversationService.getOneById(receiver_id);
                 for (let i = 0; i < conversation.members.length; i++) {
                     let receiver_id = conversation.members[i];
                     if (receiver_id != req.userId) {
+
+                        let receiver = await userService.getOneById(receiver_id);
+                        registration_ids_array.push(receiver.fcm_token);
                         sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message });
                     }
                 }
+                var notification = {
+                    registration_ids: registration_ids_array,
+                    notification: {
+                        title: conversation.name,
+                        body: 'Anh soái ca quá đẹp trai'
+                    }
+                };
+
+                fcm.send(notification, function (err, response) { });
                 return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
             }
         } catch (error) {
