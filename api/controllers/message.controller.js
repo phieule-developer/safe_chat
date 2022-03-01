@@ -16,6 +16,8 @@ module.exports = {
             let { receiver_id } = req.params;
             let error, conversation_id;
 
+            let user = await userService.getOneById(req.userId);
+
             var fcm = new FCM(serverkey);
 
             let type_message = Number(req.body.type) ? Number(req.body.type) : 0;
@@ -44,24 +46,16 @@ module.exports = {
                         type: type_message,
                         content,
                     };
-                    let user = await userService.getOneById(req.userId);
 
                     let receiver = await userService.getOneById(receiver_id);
 
                     let message = await messsageService.create(body);
 
-                    // var notification = {
-                    //     to: receiver.fcm_token,
-                    //     notification: {
-                    //         title: user.fullname,
-                    //         body: 'Anh soái ca quá đẹp trai'
-                    //     }
-                    // };
                     var notification = {
-                        to: "eBUyhzGrTheiox_XnxpSkK:APA91bE8b4TyDDT2Rq1Lbg-AFRYvF2J_OjqSGPmjKDZ3WvoVbuP1nniBtvRTg9GtLORLpvFnnSy6ArRSI_GJkBQkyjuB_29m5Q44RFnLIJ8xlUuu4ADL1_4poHwF-sDnrkKpF6UO8qmU",
+                        to: receiver.fcm_token,
                         notification: {
-                            title: "Le Van Phieu",
-                            body: 'Anh soái ca quá đẹp trai'
+                            title: user.fullname,
+                            body: content,
                         }
                     };
 
@@ -92,8 +86,8 @@ module.exports = {
                     var notification = {
                         to: receiver.fcm_token,
                         notification: {
-                            title: receiver.fullname,
-                            body: 'Anh soái ca quá đẹp trai'
+                            title: user.fullname,
+                            body: content
                         }
                     };
 
@@ -132,18 +126,11 @@ module.exports = {
                         sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message });
                     }
                 }
-                // var notification = {
-                //     registration_ids: registration_ids_array,
-                //     notification: {
-                //         title: conversation.name,
-                //         body: 'Anh soái ca quá đẹp trai'
-                //     }
-                // };
                 var notification = {
-                    to: "eBUyhzGrTheiox_XnxpSkK:APA91bE8b4TyDDT2Rq1Lbg-AFRYvF2J_OjqSGPmjKDZ3WvoVbuP1nniBtvRTg9GtLORLpvFnnSy6ArRSI_GJkBQkyjuB_29m5Q44RFnLIJ8xlUuu4ADL1_4poHwF-sDnrkKpF6UO8qmU",
+                    registration_ids: registration_ids_array,
                     notification: {
-                        title: "Le Van Phieu",
-                        body: 'Anh soái ca quá đẹp trai'
+                        title: `${user.fullname} gửi tới ${conversation.name} `,
+                        body: content
                     }
                 };
 
@@ -153,7 +140,6 @@ module.exports = {
                 return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
             }
         } catch (error) {
-            console.log(error);
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
         }
     },
