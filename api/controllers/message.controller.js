@@ -79,8 +79,20 @@ module.exports = {
                         last_message: body.content,
                         type_last_message: type_message,
                         is_seen: [req.userId]
-                    }
+                    };
                     let message = await messsageService.create(body);
+                    let receiver = await userService.getOneById(receiver_id);
+                    var notification = {
+                        to: receiver.fcm_token,
+                        notification: {
+                            title: user.fullname,
+                            body: 'Anh soái ca quá đẹp trai'
+                        }
+                    };
+
+                    fcm.send(notification, function (err, response) {
+                        console.log(err, response);
+                    });
                     await conversationService.update(conversation_id, body_update);
 
                     sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message });
