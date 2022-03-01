@@ -58,7 +58,9 @@ module.exports = {
                         }
                     };
 
-                    fcm.send(notification, function (err, response) { });
+                    fcm.send(notification, function (err, response) {
+                        console.log(err, response);
+                    });
 
                     sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message, fullname: user.fullname, avatar: user.avatar, public_key: user.public_key }) // gửi tới thành viên
 
@@ -119,7 +121,9 @@ module.exports = {
                     }
                 };
 
-                fcm.send(notification, function (err, response) { });
+                fcm.send(notification, function (err, response) {
+                    console.log(err, response);
+                });
                 return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
             }
         } catch (error) {
