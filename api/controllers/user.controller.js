@@ -38,6 +38,10 @@ module.exports = {
             if (req.body.last_online) {
                 body_update.last_online = req.body.last_online;
             };
+
+            if(req.body.fcm_token){
+                body_update.fcm_token = req.body.fcm_token;
+            }
             let result = await userService.updateMe(req.userId, body_update);
 
             if (result) {

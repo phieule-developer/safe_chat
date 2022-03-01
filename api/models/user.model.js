@@ -34,6 +34,10 @@ let Schema = new mongoose.Schema({
         type: String,
         default: ""
     },
+    fcm_token: {
+        type: String,
+        default: ""
+    },
     created_at: {
         type: Number,
         default: Date.now()
