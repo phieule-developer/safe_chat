@@ -20,10 +20,12 @@ module.exports = {
                 }
             },
             {
-                from: DATABASE_NAME.USER,
-                localField: "sender_id",
-                foreignField: "_id",
-                as: "sender"
+                $lookup: {
+                    from: DATABASE_NAME.USER,
+                    localField: "sender_id",
+                    foreignField: "_id",
+                    as: "sender"
+                }
             },
             {
                 $unwind: "$sender"
