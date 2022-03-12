@@ -60,6 +60,7 @@ module.exports = {
                         data: {
                             public_key: user.public_key,
                             type: 0,
+                            id: receiver_id
                         }
                     };
 
@@ -95,6 +96,8 @@ module.exports = {
                         data: {
                             public_key: user.public_key,
                             type: 0,
+                            id: receiver_id
+
                         }
                     };
 
@@ -141,6 +144,7 @@ module.exports = {
                     data: {
                         public_key: user.public_key,
                         type: 1,
+                        id: receiver_id
                     }
                 };
 
