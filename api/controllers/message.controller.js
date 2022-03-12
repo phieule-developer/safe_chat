@@ -121,7 +121,8 @@ module.exports = {
                 let body_update = {
                     last_update: body.created_at,
                     type_last_message: type_message,
-                    last_message: body.content
+                    last_message: body.content,
+                    is_seen: [req.userId]
                 }
                 let message = await messsageService.create(body);
                 await conversationService.update(conversation_id, body_update);
