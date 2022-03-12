@@ -1,4 +1,5 @@
 const { Types } = require('mongoose');
+const { DATABASE_NAME } = require('../../constants/database');
 let messageModel = require('../models/message.model');
 module.exports = {
     create: async body => {
@@ -19,11 +20,26 @@ module.exports = {
                 }
             },
             {
+                from: DATABASE_NAME.USER,
+                localField: "sender_id",
+                foreignField: "_id",
+                as: "sender"
+            },
+            {
+                $unwind: "$sender"
+            },
+            {
                 $skip: page_size * (page_index - 1)
             },
             {
                 $limit: page_size
             },
+            {
+                $project: {
+                    "sender.token_verify": 0,
+                    "sender.password": 0
+                }
+            }
 
 
         ]);
