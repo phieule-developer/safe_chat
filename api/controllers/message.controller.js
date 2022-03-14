@@ -107,7 +107,7 @@ module.exports = {
                     });
                     await conversationService.update(conversation_id, body_update);
 
-                    sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message });
+                    sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message, fullname: user.fullname, avatar: user.avatar, public_key: user.public_key });
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
                 }
             } else {
@@ -135,7 +135,7 @@ module.exports = {
 
                         let receiver = await userService.getOneById(receiver_id);
                         registration_ids_array.push(receiver.fcm_token);
-                        sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message });
+                        sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message, fullname: user.fullname, avatar: user.avatar, public_key: user.public_key });
                     }
                 }
                 var notification = {
