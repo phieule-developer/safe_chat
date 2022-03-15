@@ -139,7 +139,7 @@ module.exports = {
                         let notification = {
                             to: receiver.fcm_token,
                             notification: {
-                                title: user.fullname,
+                                title: `${user.fullname} gửi tới nhóm ${conversation.name}`,
                                 body: content
                             },
                             data: {
