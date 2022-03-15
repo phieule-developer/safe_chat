@@ -51,7 +51,7 @@ module.exports = {
 
                     let message = await messsageService.create(body);
 
-                    var notification = {
+                    let notification = {
                         to: receiver.fcm_token,
                         notification: {
                             title: user.fullname,
@@ -88,7 +88,7 @@ module.exports = {
                     };
                     let message = await messsageService.create(body);
                     let receiver = await userService.getOneById(receiver_id);
-                    var notification = {
+                    let notification = {
                         to: receiver.fcm_token,
                         notification: {
                             title: user.fullname,
@@ -138,7 +138,7 @@ module.exports = {
                         sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message, fullname: user.fullname, avatar: user.avatar, public_key: user.public_key });
                     }
                 }
-                var notification = {
+                let notification = {
                     registration_ids: registration_ids_array,
                     notification: {
                         title: `${user.fullname} gửi tới ${conversation.name} `,
@@ -152,8 +152,7 @@ module.exports = {
                     }
                 };
 
-                fcm.send(notification, function (err, response) {
-                });
+                fcm.send(notification, function (err, response) { });
                 return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
             }
         } catch (error) {

@@ -15,7 +15,7 @@ module.exports = {
     create: async (req, res) => {
         try {
 
-            let { user_list,key_list } = req.body;
+            let { user_list, key_list } = req.body;
 
             let member_list = req.body.user_list;
 
@@ -49,9 +49,9 @@ module.exports = {
 
                         let filter_key_encryption = [
                             {
-                                $match:{
+                                $match: {
                                     user_id: Types.ObjectId(user_id),
-                                    conversation_id: Types(conversation._id)
+                                    conversation_id: Types.ObjectId(conversation._id)
                                 }
                             }
                         ];
@@ -59,9 +59,9 @@ module.exports = {
                         let key_encryption = await groupKeyService.getFilter(filter_key_encryption);
                         key_encryption = key_encryption.length > 0 ? key_encryption[0] : {};
 
-                        sendReportToUser(user_id, CONST.EVENT.CREATE_GROUP, {conversation,key_encryption}, version);
+                        sendReportToUser(user_id, CONST.EVENT.CREATE_GROUP, { conversation, key_encryption }, version);
                     };
-                    
+
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, conversation, version);
                 } else {
                     return ApiResponse(res, 400, "Nhóm phải có từ 3 thành viên trở lên", {}, version);
@@ -69,6 +69,7 @@ module.exports = {
             }
 
         } catch (error) {
+            console.log(error);
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
         }
     },
@@ -103,23 +104,26 @@ module.exports = {
                 },
                 {
                     $lookup:
-                       {
-                         from: DATABASE_NAME.GROUP_KEY,
-                         let: { conversation_id: "$_id"},
-                         pipeline: [
-                            { $match:
-                               { $expr:
-                                  { $and:
-                                     [
-                                       { $eq: [ "$conversation_id",  "$$conversation_id" ] },
-                                       { $eq: [ "$user_id", Types.ObjectId(req.userId) ] }
-                                     ]
-                                  }
-                               }
+                    {
+                        from: DATABASE_NAME.GROUP_KEY,
+                        let: { conversation_id: "$_id" },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $expr:
+                                    {
+                                        $and:
+                                            [
+                                                { $eq: ["$conversation_id", "$$conversation_id"] },
+                                                { $eq: ["$user_id", Types.ObjectId(req.userId)] }
+                                            ]
+                                    }
+                                }
                             },
-                         ],
-                         as: "group_key"
-                       }
+                        ],
+                        as: "group_key"
+                    }
                 },
                 {
                     $unwind: {
@@ -144,8 +148,8 @@ module.exports = {
                         "member": 1,
                         "created_at": 1,
                         "seen": 1,
-                        "group_key_encryption":"$group_key.group_key_encryption",
-                        "public_key_encrypter":"$group_key.public_key_encrypter",
+                        "group_key_encryption": "$group_key.group_key_encryption",
+                        "public_key_encrypter": "$group_key.public_key_encrypter",
                         "seen": {
                             $in: [Types.ObjectId(req.userId), "$is_seen"]
                         },
@@ -227,7 +231,7 @@ module.exports = {
 
             let { members } = await conservationService.getOneById(id);
 
-            let { new_member ,key_list} = req.body;
+            let { new_member, key_list } = req.body;
             for (let i = 0; i < new_member.length; i++) {
                 if (!objectID.isValid(new_member[i])) {
                     return ApiResponse(res, 400, "Định dạng không chính xác", {}, version);
@@ -259,7 +263,7 @@ module.exports = {
                 members.sort();
                 await conservationService.update(id, { members });
                 await groupKeyService.insertMany(key_list);
-                return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS,{}, version);
+                return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
             }
 
 
@@ -289,7 +293,7 @@ module.exports = {
             let { members } = await conservationService.getOneById(id);
             let new_members = members.filter(e => e != req.userId);
             await conservationService.update(id, { members: new_members });
-            await groupKeyService.removeKey(id,req.userId);
+            await groupKeyService.removeKey(id, req.userId);
             return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
         } catch (error) {
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
