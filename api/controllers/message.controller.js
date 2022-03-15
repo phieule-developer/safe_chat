@@ -127,14 +127,14 @@ module.exports = {
                 let message = await messsageService.create(body);
                 await conversationService.update(conversation_id, body_update);
 
-                let registration_ids_array = [];
+                // let registration_ids_array = [];
                 let conversation = await conversationService.getOneById(receiver_id);
                 for (let i = 0; i < conversation.members.length; i++) {
                     let receiver_id = conversation.members[i];
                     if (receiver_id != req.userId) {
 
                         let receiver = await userService.getOneById(receiver_id);
-                        registration_ids_array.push(receiver.fcm_token);
+                        // registration_ids_array.push(receiver.fcm_token);
 
                         let notification = {
                             to: receiver.fcm_token,
@@ -150,7 +150,9 @@ module.exports = {
 
                             }
                         };
-                        fcm.send(notification, function (err, response) { });
+                        fcm.send(notification, function (err, response) {
+                            console.log(err, response);
+                        });
                         sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message, fullname: user.fullname, avatar: user.avatar, public_key: user.public_key });
                     }
                 }
