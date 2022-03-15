@@ -12,5 +12,9 @@ module.exports = {
            conversation_id: Types.ObjectId(conversation_id),
            user_id: Types.ObjectId(user_id)
         });
-    }
+    },
+    getFilter: async (filter) => {
+        let result = await conversationModel.aggregate(filter);
+        return result;
+    },
 }

@@ -7,6 +7,7 @@ let userService = require("../services/user.service");
 const { DATABASE_NAME } = require('../../constants/database');
 const { sendReportToUser } = require('../../helper/socketIO/index');
 const { Types } = require('mongoose');
+
 let objectID = require('mongodb').ObjectID
 
 const version = 1;
@@ -14,7 +15,7 @@ module.exports = {
     create: async (req, res) => {
         try {
 
-            let { user_list } = req.body;
+            let { user_list,key_list } = req.body;
 
             let member_list = req.body.user_list;
 
@@ -34,9 +35,31 @@ module.exports = {
 
                     let conversation = await conservationService.create(req.body);
 
+                    let user = await userService.getOneById(req.userId);
+
+                    for (const key of key_list) {
+                        key.conversation_id = conversation._id;
+                        key.public_key_encrypter = user.public_key;
+                    };
+
+                    await groupKeyService.insertMany(key_list);
+
                     for (let i = 0; i < member_list.length; i++) {
                         let user_id = member_list[i];
-                        sendReportToUser(user_id, CONST.EVENT.CREATE_GROUP, conversation, version);
+
+                        let filter_key_encryption = [
+                            {
+                                $match:{
+                                    user_id: Types.ObjectId(user_id),
+                                    conversation_id: Types(conversation._id)
+                                }
+                            }
+                        ];
+
+                        let key_encryption = await groupKeyService.getFilter(filter_key_encryption);
+                        key_encryption = key_encryption.length > 0 ? key_encryption[0] : {};
+
+                        sendReportToUser(user_id, CONST.EVENT.CREATE_GROUP, {conversation,key_encryption}, version);
                     };
                     
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, conversation, version);
