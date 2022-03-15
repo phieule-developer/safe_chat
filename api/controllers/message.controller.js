@@ -143,7 +143,7 @@ module.exports = {
                                 body: content
                             },
                             data: {
-                                public_key: user.public_key,
+                                public_key: receiver.public_key,
                                 type: 1,
                                 id: receiver_id,
                                 type_message
