@@ -135,24 +135,25 @@ module.exports = {
 
                         let receiver = await userService.getOneById(receiver_id);
                         registration_ids_array.push(receiver.fcm_token);
+
+                        let notification = {
+                            to: receiver.fcm_token,
+                            notification: {
+                                title: user.fullname,
+                                body: content
+                            },
+                            data: {
+                                public_key: user.public_key,
+                                type: 1,
+                                id: receiver_id,
+                                type_message
+
+                            }
+                        };
+                        fcm.send(notification, function (err, response) { });
                         sendReportToUser(receiver_id, CONST.EVENT.PERSON_MESSAGE, { message, fullname: user.fullname, avatar: user.avatar, public_key: user.public_key });
                     }
                 }
-                let notification = {
-                    registration_ids: registration_ids_array,
-                    notification: {
-                        title: `${user.fullname} gửi tới ${conversation.name} `,
-                        body: content
-                    },
-                    data: {
-                        public_key: user.public_key,
-                        type: 1,
-                        id: receiver_id,
-                        type_message
-                    }
-                };
-
-                fcm.send(notification, function (err, response) { });
                 return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, {}, version);
             }
         } catch (error) {

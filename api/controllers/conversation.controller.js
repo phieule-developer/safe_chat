@@ -37,11 +37,13 @@ module.exports = {
 
                     let user = await userService.getOneById(req.userId);
 
+                    console.log(user);
                     for (const key of key_list) {
                         key.conversation_id = conversation._id;
                         key.public_key_encrypter = user.public_key;
                     };
 
+                    console.log(key_list);
                     await groupKeyService.insertMany(key_list);
 
                     for (let i = 0; i < member_list.length; i++) {
