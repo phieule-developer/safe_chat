@@ -103,16 +103,12 @@ module.exports = {
                     }
                 },
                 {
-                    $lookup: {
+                    $lookup:
+                    {
                         from: DATABASE_NAME.USER,
-                        pipeline: [
-                            {
-                                $match: {
-                                    _id: Types.ObjectId(req.userId)
-                                }
-                            }
-                        ],
-                        "as": "user"
+                        localField: "created_by",
+                        foreignField: "_id",
+                        as: "user"
                     }
                 },
                 {
@@ -166,7 +162,7 @@ module.exports = {
                         "seen": 1,
                         "group_key_encryption": "$group_key.group_key_encryption",
                         "public_key_encrypter": "$group_key.public_key_encrypter",
-                        "my_public_key": "$user.public_key",
+                        "creater_public_key": "$user.public_key",
                         "seen": {
                             $in: [Types.ObjectId(req.userId), "$is_seen"]
                         },
