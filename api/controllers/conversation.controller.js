@@ -46,20 +46,7 @@ module.exports = {
 
                     for (let i = 0; i < member_list.length; i++) {
                         let user_id = member_list[i];
-
-                        let filter_key_encryption = [
-                            {
-                                $match: {
-                                    user_id: Types.ObjectId(user_id),
-                                    conversation_id: Types.ObjectId(conversation._id)
-                                }
-                            }
-                        ];
-
-                        let key_encryption = await groupKeyService.getFilter(filter_key_encryption);
-                        key_encryption = key_encryption.length > 0 ? key_encryption[0] : {};
-
-                        sendReportToUser(user_id, CONST.EVENT.CREATE_GROUP, { conversation, key_encryption }, version);
+                        sendReportToUser(user_id, CONST.EVENT.CREATE_GROUP, { conversation, my_public_key: user.public_key, version);
                     };
 
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, conversation, version);
