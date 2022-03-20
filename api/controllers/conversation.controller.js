@@ -59,7 +59,7 @@ module.exports = {
                         let key_encryption = await groupKeyService.getFilter(filter_key_encryption);
                         key_encryption = key_encryption.length > 0 ? key_encryption[0] : {};
 
-                        sendReportToUser(user_id, CONST.EVENT.CREATE_GROUP, { conversation, key_encryption, my_public_key: user.public_key }, version);
+                        sendReportToUser(user_id, CONST.EVENT.CREATE_GROUP, { conversation, key_encryption, creater_public_key: user.public_key }, version);
                     };
 
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, conversation, version);
@@ -112,7 +112,10 @@ module.exports = {
                     }
                 },
                 {
-                    $unwind: "$user"
+                    $unwind: {
+                        path: "$user",
+                        preserveNullAndEmptyArrays: true
+                    }
                 },
                 {
                     $lookup:
