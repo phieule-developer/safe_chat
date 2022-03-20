@@ -46,7 +46,20 @@ module.exports = {
 
                     for (let i = 0; i < member_list.length; i++) {
                         let user_id = member_list[i];
-                        sendReportToUser(user_id, CONST.EVENT.CREATE_GROUP, { conversation, my_public_key: user.public_key, version);
+
+                        let filter_key_encryption = [
+                            {
+                                $match: {
+                                    user_id: Types.ObjectId(user_id),
+                                    conversation_id: Types.ObjectId(conversation._id)
+                                }
+                            }
+                        ];
+
+                        let key_encryption = await groupKeyService.getFilter(filter_key_encryption);
+                        key_encryption = key_encryption.length > 0 ? key_encryption[0] : {};
+
+                        sendReportToUser(user_id, CONST.EVENT.CREATE_GROUP, { conversation, key_encryption, my_public_key: user.public_key }, version);
                     };
 
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, conversation, version);
@@ -105,35 +118,35 @@ module.exports = {
                 {
                     $unwind: "$user"
                 },
-                // {
-                //     $lookup:
-                //     {
-                //         from: DATABASE_NAME.GROUP_KEY,
-                //         let: { conversation_id: "$_id" },
-                //         pipeline: [
-                //             {
-                //                 $match:
-                //                 {
-                //                     $expr:
-                //                     {
-                //                         $and:
-                //                             [
-                //                                 { $eq: ["$conversation_id", "$$conversation_id"] },
-                //                                 { $eq: ["$user_id", Types.ObjectId(req.userId)] }
-                //                             ]
-                //                     }
-                //                 }
-                //             },
-                //         ],
-                //         as: "group_key"
-                //     }
-                // },
-                // {
-                //     $unwind: {
-                //         path: "$group_key",
-                //         preserveNullAndEmptyArrays: true
-                //     }
-                // },
+                {
+                    $lookup:
+                    {
+                        from: DATABASE_NAME.GROUP_KEY,
+                        let: { conversation_id: "$_id" },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $expr:
+                                    {
+                                        $and:
+                                            [
+                                                { $eq: ["$conversation_id", "$$conversation_id"] },
+                                                { $eq: ["$user_id", Types.ObjectId(req.userId)] }
+                                            ]
+                                    }
+                                }
+                            },
+                        ],
+                        as: "group_key"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$group_key",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
                 {
                     $sort: {
                         last_update: -1
@@ -151,7 +164,8 @@ module.exports = {
                         "member": 1,
                         "created_at": 1,
                         "seen": 1,
-                        // "group_key_encryption": "$group_key.group_key_encryption",
+                        "group_key_encryption": "$group_key.group_key_encryption",
+                        "public_key_encrypter": "$group_key.public_key_encrypter",
                         "my_public_key": "$user.public_key",
                         "seen": {
                             $in: [Types.ObjectId(req.userId), "$is_seen"]
@@ -162,6 +176,7 @@ module.exports = {
 
             ];
             let result = await conservationService.getFilter(filter);
+
 
             return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, result, version);
 
