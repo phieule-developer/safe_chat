@@ -37,13 +37,11 @@ module.exports = {
 
                     let user = await userService.getOneById(req.userId);
 
-                    console.log(user);
                     for (const key of key_list) {
                         key.conversation_id = conversation._id;
                         key.public_key_encrypter = user.public_key;
                     };
 
-                    console.log(key_list);
                     await groupKeyService.insertMany(key_list);
 
                     for (let i = 0; i < member_list.length; i++) {
@@ -105,34 +103,50 @@ module.exports = {
                     }
                 },
                 {
-                    $lookup:
-                    {
-                        from: DATABASE_NAME.GROUP_KEY,
-                        let: { conversation_id: "$_id" },
+                    $lookup: {
+                        from: DATABASE_NAME.USER,
                         pipeline: [
                             {
-                                $match:
-                                {
-                                    $expr:
-                                    {
-                                        $and:
-                                            [
-                                                { $eq: ["$conversation_id", "$$conversation_id"] },
-                                                { $eq: ["$user_id", Types.ObjectId(req.userId)] }
-                                            ]
-                                    }
+                                $match: {
+                                    _id: Types.ObjectId(req.userId)
                                 }
-                            },
+                            }
                         ],
-                        as: "group_key"
+                        "as": "user"
                     }
                 },
                 {
-                    $unwind: {
-                        path: "$group_key",
-                        preserveNullAndEmptyArrays: true
-                    }
+                    $unwind: "$user"
                 },
+                // {
+                //     $lookup:
+                //     {
+                //         from: DATABASE_NAME.GROUP_KEY,
+                //         let: { conversation_id: "$_id" },
+                //         pipeline: [
+                //             {
+                //                 $match:
+                //                 {
+                //                     $expr:
+                //                     {
+                //                         $and:
+                //                             [
+                //                                 { $eq: ["$conversation_id", "$$conversation_id"] },
+                //                                 { $eq: ["$user_id", Types.ObjectId(req.userId)] }
+                //                             ]
+                //                     }
+                //                 }
+                //             },
+                //         ],
+                //         as: "group_key"
+                //     }
+                // },
+                // {
+                //     $unwind: {
+                //         path: "$group_key",
+                //         preserveNullAndEmptyArrays: true
+                //     }
+                // },
                 {
                     $sort: {
                         last_update: -1
@@ -150,8 +164,8 @@ module.exports = {
                         "member": 1,
                         "created_at": 1,
                         "seen": 1,
-                        "group_key_encryption": "$group_key.group_key_encryption",
-                        "public_key_encrypter": "$group_key.public_key_encrypter",
+                        // "group_key_encryption": "$group_key.group_key_encryption",
+                        "my_public_key": "$user.public_key",
                         "seen": {
                             $in: [Types.ObjectId(req.userId), "$is_seen"]
                         },
