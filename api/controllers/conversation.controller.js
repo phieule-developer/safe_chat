@@ -37,13 +37,11 @@ module.exports = {
 
                     let user = await userService.getOneById(req.userId);
 
-                    console.log(user);
                     for (const key of key_list) {
                         key.conversation_id = conversation._id;
                         key.public_key_encrypter = user.public_key;
                     };
 
-                    console.log(key_list);
                     await groupKeyService.insertMany(key_list);
 
                     for (let i = 0; i < member_list.length; i++) {
@@ -61,7 +59,7 @@ module.exports = {
                         let key_encryption = await groupKeyService.getFilter(filter_key_encryption);
                         key_encryption = key_encryption.length > 0 ? key_encryption[0] : {};
 
-                        sendReportToUser(user_id, CONST.EVENT.CREATE_GROUP, { conversation, key_encryption }, version);
+                        sendReportToUser(user_id, CONST.EVENT.CREATE_GROUP, { conversation, key_encryption, creater_public_key: user.public_key }, version);
                     };
 
                     return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, conversation, version);
@@ -102,6 +100,21 @@ module.exports = {
                             }
                         ],
                         "as": "member"
+                    }
+                },
+                {
+                    $lookup:
+                    {
+                        from: DATABASE_NAME.USER,
+                        localField: "created_by",
+                        foreignField: "_id",
+                        as: "user"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$user",
+                        preserveNullAndEmptyArrays: true
                     }
                 },
                 {
@@ -152,6 +165,7 @@ module.exports = {
                         "seen": 1,
                         "group_key_encryption": "$group_key.group_key_encryption",
                         "public_key_encrypter": "$group_key.public_key_encrypter",
+                        "creater_public_key": "$user.public_key",
                         "seen": {
                             $in: [Types.ObjectId(req.userId), "$is_seen"]
                         },
@@ -161,6 +175,7 @@ module.exports = {
 
             ];
             let result = await conservationService.getFilter(filter);
+
 
             return ApiResponse(res, 200, CONST.MESSAGE.SUCCESS, result, version);
 
