@@ -18,7 +18,12 @@ const socket = (io) => {
                         client[decoded.userId].push(socket.id);
                     }
                 }
-            }
+            };
+            socket.on("START_AUDIO_CALL", (user_id) => {
+                for (let id of client[user_id]) {
+                    global.io.to(id).emit("AUDIO_CALL")
+                }
+            });
             socket.on('disconnect', async () => {
 
                 if (token) {
