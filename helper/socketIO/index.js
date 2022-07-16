@@ -19,9 +19,14 @@ const socket = (io) => {
                     }
                 }
             };
-            socket.on("START_AUDIO_CALL", (user_id) => {
-                for (let id of client[user_id]) {
-                    global.io.to(id).emit("AUDIO_CALL")
+            socket.on("OFFER", (data) => {
+                for (let id of client[data.user_id]) {
+                    global.io.to(id).emit("OFFER", { user_id: data.user_id, offer: data.offer });
+                }
+            });
+            socket.on("ANSWER", (data) => {
+                for (let id of client[data.caller_id]) {
+                    global.io.to(id).emit("ANSWER", { caller_id: data.caller_id, answer: data.answer });
                 }
             });
             socket.on('disconnect', async () => {
