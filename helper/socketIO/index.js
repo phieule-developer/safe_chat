@@ -21,7 +21,7 @@ const socket = (io) => {
             };
             socket.on("OFFER", (data) => {
                 for (let id of client[data.callee_id]) {
-                    global.io.to(id).emit("OFFER", { callee_id: data.callee_id, offer: data.offer });
+                    global.io.to(id).emit("OFFER", { callee_id: data.callee_id, offer: data.offer, caller_id: data.caller_id });
                 }
             });
             socket.on("ANSWER", (data) => {
