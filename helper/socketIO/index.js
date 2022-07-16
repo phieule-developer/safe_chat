@@ -20,8 +20,8 @@ const socket = (io) => {
                 }
             };
             socket.on("OFFER", (data) => {
-                for (let id of client[data.user_id]) {
-                    global.io.to(id).emit("OFFER", { user_id: data.user_id, offer: data.offer });
+                for (let id of client[data.callee_id]) {
+                    global.io.to(id).emit("OFFER", { callee_id: data.callee_id, offer: data.offer });
                 }
             });
             socket.on("ANSWER", (data) => {
