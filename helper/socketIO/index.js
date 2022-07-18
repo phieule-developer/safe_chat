@@ -29,6 +29,11 @@ const socket = (io) => {
                     global.io.to(id).emit("ANSWER", { caller_id: data.caller_id, answer: data.answer });
                 }
             });
+            socket.on('candidate', (data) => {
+                for (let id of client[data.callee_id]) {
+                    global.io.to(id).emit("candidate", { answer: data.candidate });
+                }
+            })
             socket.on('disconnect', async () => {
 
                 if (token) {
