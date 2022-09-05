@@ -55,7 +55,7 @@ module.exports = {
                         to: receiver.fcm_token,
                         notification: {
                             title: user.fullname,
-                            body: content,
+                            body: type_message == 0 ? "Tin nhắn mã hóa đầu cuối" : "Đã gửi hình ảnh",
                         },
                         data: {
                             public_key: user.public_key,
@@ -92,7 +92,7 @@ module.exports = {
                         to: receiver.fcm_token,
                         notification: {
                             title: user.fullname,
-                            body: content
+                            body: type_message == 0 ? "Tin nhắn mã hóa đầu cuối" : "Đã gửi hình ảnh",
                         },
                         data: {
                             public_key: user.public_key,
@@ -143,7 +143,7 @@ module.exports = {
                     registration_ids: registration_ids_array,
                     notification: {
                         title: `${user.fullname} gửi tới ${conversation.name} `,
-                        body: content
+                        body: type_message == 0 ? "Tin nhắn mã hóa đầu cuối" : "Đã gửi hình ảnh",
                     },
                     data: {
                         public_key: created_by.public_key,
