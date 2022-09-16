@@ -69,7 +69,6 @@ module.exports = {
             }
 
         } catch (error) {
-            console.log(error);
             return ApiResponse(res, 500, CONST.MESSAGE.ERROR, {}, version);
         }
     },
